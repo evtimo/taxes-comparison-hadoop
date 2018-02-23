@@ -1,8 +1,11 @@
 package com.company;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
 import java.util.Random;
+
 
 public class TaxNumberGenerator {
 
@@ -92,8 +95,18 @@ public class TaxNumberGenerator {
         return individualTaxNumber;
     }
 
-    public static void main(String[] args) {
+    public static void createIndividualTaxNumbersFile () throws IOException {
         String individualTaxNumber = generateIndividualTaxNumber();
-        System.out.println(individualTaxNumber);
+        try {
+            Logger logger = new Logger();
+            logger.log(individualTaxNumber);
+        } catch (Exception error) {
+            String misleadingMsg = "An error has occured while reading the file.";
+            System.err.println(misleadingMsg);
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        createIndividualTaxNumbersFile();
     }
 }
