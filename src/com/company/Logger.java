@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 
 public class Logger {
     public static void log(String message) throws IOException {
-        PrintWriter out = new PrintWriter(new FileWriter("output.txt", false), true);
+        PrintWriter out = new PrintWriter(new FileWriter("src/com/company/resources/individual-tax-numbers.txt", false), true);
         out.write(message);
         out.close();
     }
