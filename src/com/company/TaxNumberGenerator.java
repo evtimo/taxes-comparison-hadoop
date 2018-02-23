@@ -96,10 +96,19 @@ public class TaxNumberGenerator {
     }
 
     public static void createIndividualTaxNumbersFile () throws IOException {
-        String individualTaxNumber = generateIndividualTaxNumber();
         try {
             Logger logger = new Logger();
-            logger.log(individualTaxNumber);
+            logger.configure();
+            int ammountOfIndividualTaxNumbers = 1000;
+            for (int i = 0; i < ammountOfIndividualTaxNumbers; ++i) {
+                String individualTaxNumber = generateIndividualTaxNumber();
+                if (i < ammountOfIndividualTaxNumbers - 1) {
+                    logger.log(individualTaxNumber + "\n");
+                } else {
+                    logger.log(individualTaxNumber);
+                }
+            }
+
         } catch (Exception error) {
             String misleadingMsg = "An error has occured while reading the file.";
             System.err.println(misleadingMsg);
