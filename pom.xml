@@ -7,40 +7,29 @@
     <groupId>groupId</groupId>
     <artifactId>hadoop-tax-fl</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+
+    <properties>
+        <cucumber.version>1.2.5</cucumber.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.apache.hive/hive-exe
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-exec</artifactId>
-            <version>0.13.0</version>
-        </dependency>
-        <- https://mvnrepository.com/artifact/org.apache.hive/hive-jdbc -->
+        <!-- repository.com/artifact/org.apache.hive/hive-jdbc -->
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-jdbc</artifactId>
             <version>1.1.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.hive/hive-metastore
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-metastore</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-        <!- https://mvnrepository.com/artifact/org.apache.hive/hive-servicex
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-service</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-        <!- https://mvnrepository.com/artifact/org.apache.thrift/libfb303-->
-        <!-- <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libfb303</artifactId>
-            <version>0.6.1</version>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-        <!- https://mvnrepository.com/artifact/log4j/log4j-->
+
+        <!-- https://mvnrepository.com/artifact/log4j/log4j-->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -52,6 +41,45 @@
             <artifactId>hadoop-core</artifactId>
             <version>1.2.1</version>
         </dependency>
+
+
+
+        <!-- TEST DEPENDENCIES -->
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.10</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>13.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-shared-utils</artifactId>
+            <version>0.3</version>
+        </dependency>
+
 
     </dependencies>
 
