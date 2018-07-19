@@ -2,9 +2,10 @@ Feature: HiveTest
 
   Scenario Outline:
     Given Table <seller> and <customer>
-    When we put correct data into DataBase
-    Then result should be
+    When we put data into DataBase
+    Then  <table1> and <table2> should contain this fields
 
     Examples:
-      | seller                                               | customer                                             |
-      | 1845411480,184504719,1216291511,121603240,1095764.52 | 1845411480,184504719,1216291511,121603240,1095764.52 |
+      | table1                          | table2                            | seller                                              | customer                                            |
+      | seller_errors_customer_has_pair | customer_errors_customer_has_pair | 3000000000,300000000,3976815858,397604021,845467.64 | 3976815858,397604021,3615413234,361502122,845467.64 |
+
