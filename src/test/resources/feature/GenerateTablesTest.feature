@@ -6,6 +6,6 @@ Feature: HiveTest
     Then  <table1> and <table2> should contain this fields
 
     Examples:
-      | table1                          | table2                            | seller                                              | customer                                            |
-      | seller_errors_customer_has_pair | customer_errors_customer_has_pair | 3000000000,300000000,3976815858,397604021,845467.64 | 3976815858,397604021,3615413234,361502122,845467.64 |
+      | table1                          | table2                            | seller                                               | customer                                             |
+      | seller_errors_customer_has_pair | customer_errors_customer_has_pair | 4296298695,429604509,4146244349,414604344,1045461.12 | 4146244349,414604344,4296298695,400000000,1045461.12 |
 
