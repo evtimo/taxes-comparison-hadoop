@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 class TableRecord {
@@ -13,8 +14,8 @@ class TableRecord {
     RecordType recordType;
 
     TableRecord(String rec, RecordType rt) {
-    this.recordType = rt;
-    String[] columns = rec.split(",");
+        this.recordType = rt;
+        String[] columns = rec.split(",");
         switch (recordType) {
             case seller:
                 this.setSeller_inn(columns[0]);
@@ -120,137 +121,15 @@ class TableRecord {
 
 public class GenerateTables {
 
+    public static Map<String, String> queries;
+    private String pathname;
+    private SQLReader sqlread;
+
+    //System.out.println(queries_01.get("TEST NAME1"));
+
     private static String driverName = "org.apache.hive.jdbc.HiveDriver";
 
     public static String URL = "jdbc:hive2://localhost:10000";
-
-    public static String QUERY_CREATE_SELLER = "CREATE TABLE IF NOT EXISTS seller ( seller_inn varchar(10), seller_kpp varchar(9), " +
-            "customer_inn varchar(10),customer_kpp varchar(9), total_with_tax double, total_without_tax double) COMMENT " +
-            "'Sellers transaction info' ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' LINES TERMINATED BY  '\n' STORED AS TEXTFILE";
-
-    public static String QUERY_CREATE_CUSTOMER = "CREATE TABLE IF NOT EXISTS customer (  customer_inn varchar(10), customer_kpp varchar(9), " +
-            "seller_inn varchar(10),seller_kpp varchar(9),  total_with_tax double, total_without_tax double) COMMENT " +
-            "'Sellers transaction info' ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' LINES TERMINATED BY  '\n' STORED AS TEXTFILE";
-
-    // #2
-    public static String QUERY_COMPARE_SELLER_ERR = "CREATE TABLE IF NOT EXISTS seller_errors AS SELECT " +
-            "s.seller_inn AS seller_inn_err, s.seller_kpp AS seller_kpp_err,s.customer_inn AS customer_inn_err, s.customer_kpp AS customer_kpp_err, " +
-            "s.total_with_tax AS total_with_tax_err, s.total_without_tax AS total_without_tax_err " +
-            "FROM seller s LEFT JOIN customer c ON " +
-            "s.customer_inn = c.customer_inn AND s.seller_inn = c.seller_inn AND " +
-            "s.customer_kpp = c.customer_kpp AND s.seller_kpp = c.seller_kpp " +
-            "WHERE c.customer_inn is NULL AND c.seller_inn is NULL AND c.customer_kpp is NULL AND c.seller_kpp is NULL";
-
-    public static String QUERY_COMPARE_CUSTOMER_ERR = "CREATE TABLE IF NOT EXISTS customer_errors AS SELECT c.customer_inn AS customer_inn_err, c.customer_kpp AS customer_kpp_err," +
-            "c.seller_inn AS seller_inn_err, c.seller_kpp AS seller_kpp_err,  " +
-            "c.total_with_tax AS total_with_tax_err, c.total_without_tax AS total_without_tax_err " +
-            "FROM customer c LEFT JOIN seller s ON " +
-            "C.customer_inn = s.customer_inn AND c.seller_inn = s.seller_inn AND " +
-            "s.customer_kpp = c.customer_kpp AND s.seller_kpp = c.seller_kpp " +
-            "WHERE s.customer_inn is NULL AND s.seller_inn is NULL AND s.customer_kpp is NULL AND s.seller_kpp is NULL";
-
-    // #3
-    public static String QUERY_COMPARE_SELLER_CORR = "CREATE TABLE IF NOT EXISTS seller_correct AS SELECT s.seller_inn AS seller_inn_corr, " +
-            "s.seller_kpp AS seller_kpp_corr, s.customer_inn AS customer_inn_corr, s.customer_kpp AS customer_kpp_corr,  " +
-            "s.total_with_tax AS total_with_tax_corr, s.total_without_tax AS total_without_tax_corr " +
-            "FROM seller s INNER JOIN customer c ON " +
-            "s.customer_inn = c.customer_inn AND s.seller_inn = c.seller_inn AND " +
-            "s.customer_kpp = c.customer_kpp AND s.seller_kpp = c.seller_kpp ";
-
-    public static String QUERY_COMPARE_CUSTOMER_CORR = "CREATE TABLE IF NOT EXISTS customer_correct AS SELECT c.customer_inn AS customer_inn_corr, c.customer_kpp AS customer_kpp_corr, " +
-            "c.seller_inn AS seller_inn_corr, c.seller_kpp AS seller_kpp_corr,  " +
-            "c.total_with_tax AS total_with_tax_corr, c.total_without_tax AS total_without_tax_corr " +
-            "FROM customer c INNER JOIN seller s ON " +
-            "c.customer_inn = s.customer_inn AND c.seller_inn = s.seller_inn AND " +
-            "s.customer_kpp = c.customer_kpp AND s.seller_kpp = c.seller_kpp";
-
-    // #4
-    public static String QUERY_COMPARE_CORRECT_COMPLETELY = "CREATE TABLE IF NOT EXISTS correct_completely AS SELECT s.seller_inn_corr AS seller_inn_corr_t, " +
-            "s.seller_kpp_corr AS seller_kpp_corr_t, s.customer_inn_corr AS customer_inn_corr_t, s.customer_kpp_corr AS customer_kpp_corr_t, " +
-            "s.total_with_tax_corr AS total_with_tax_corr_t, s.total_without_tax_corr AS total_without_tax_corr_t " +
-            "FROM seller_correct s INNER JOIN customer_correct c ON " +
-            "s.customer_inn_corr = c.customer_inn_corr AND s.seller_inn_corr = c.seller_inn_corr AND " +
-            "s.customer_kpp_corr = c.customer_kpp_corr AND s.seller_kpp_corr = c.seller_kpp_corr AND " +
-            "s.total_with_tax_corr = c.total_with_tax_corr AND s.total_without_tax_corr = c.total_without_tax_corr" ;
-
-    // #5
-    public static String QUERY_COMPARE_CORRECT_TOTAL_DIFF = "CREATE TABLE IF NOT EXISTS correct_total_diff AS SELECT s.seller_inn_corr AS seller_inn_corr_t, " +
-            "s.seller_kpp_corr AS seller_kpp_corr_t, s.customer_inn_corr AS customer_inn_corr_t, s.customer_kpp_corr AS customer_kpp_corr_t, " +
-            "s.total_with_tax_corr AS total_with_tax_corr_t, s.total_without_tax_corr AS total_without_tax_corr_t " +
-            "FROM seller_correct s LEFT JOIN customer_correct c ON " +
-            "s.total_with_tax_corr = c.total_with_tax_corr AND s.total_without_tax_corr = c.total_without_tax_corr AND " +
-            "s.customer_inn_corr = c.customer_inn_corr AND s.seller_inn_corr = c.seller_inn_corr AND " +
-            "s.customer_kpp_corr = c.customer_kpp_corr AND s.seller_kpp_corr = c.seller_kpp_corr " +
-            "WHERE c.total_with_tax_corr is NULL AND c.total_without_tax_corr IS NULL ";
-
-    // #6
-    public static String QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR = "CREATE TABLE IF NOT EXISTS seller_errors_seller_has_pair AS SELECT " +
-            "s.seller_inn_err AS seller_inn_err, s.seller_kpp_err AS seller_kpp_err,s.customer_inn_err AS customer_inn_err, s.customer_kpp_err AS customer_kpp_err, " +
-            "s.total_with_tax_err AS total_with_tax_err, s.total_without_tax_err AS total_without_tax_err " +
-            "FROM seller_errors s INNER JOIN customer_errors c ON " +
-            "s.seller_inn_err = c.seller_inn_err AND s.seller_kpp_err = c.seller_kpp_err ";
-
-    public static String QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR = "CREATE TABLE IF NOT EXISTS customer_errors_seller_has_pair AS SELECT " +
-            "c.customer_inn_err AS customer_inn_err, c.customer_kpp_err AS customer_kpp_err,c.seller_inn_err AS seller_inn_err, c.seller_kpp_err AS seller_kpp_err,  " +
-            "c.total_with_tax_err AS total_with_tax_err, c.total_without_tax_err AS total_without_tax_err " +
-            "FROM customer_errors c INNER JOIN seller_errors s ON " +
-            "c.seller_inn_err = s.seller_inn_err AND s.seller_kpp_err = c.seller_kpp_err ";
-
-    // #7
-    public static String QUERY_COMPARE_SELLER_ERROR_CUSTOMER_HAS_PAIR = "CREATE TABLE IF NOT EXISTS seller_errors_customer_has_pair AS SELECT " +
-            "s.seller_inn_err AS seller_inn_err, s.seller_kpp_err AS seller_kpp_err,s.customer_inn_err AS customer_inn_err, s.customer_kpp_err AS customer_kpp_err, " +
-            "s.total_with_tax_err AS total_with_tax_err, s.total_without_tax_err AS total_without_tax_err " +
-            "FROM seller_errors s INNER JOIN customer_errors c ON " +
-            "s.customer_inn_err = c.customer_inn_err AND s.customer_kpp_err = c.customer_kpp_err ";
-
-    public static String QUERY_COMPARE_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR = "CREATE TABLE IF NOT EXISTS customer_errors_customer_has_pair AS SELECT" +
-            " c.customer_inn_err AS customer_inn_err, c.customer_kpp_err AS customer_kpp_err,c.seller_inn_err AS seller_inn_err, c.seller_kpp_err AS seller_kpp_err,  " +
-            " c.total_with_tax_err AS total_with_tax_err, c.total_without_tax_err AS total_without_tax_err" +
-            " FROM customer_errors c INNER JOIN seller_errors s ON" +
-            " c.customer_inn_err = s.customer_inn_err AND s.customer_kpp_err = c.customer_kpp_err ";
-    // #8
-    public static String QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR = "CREATE TABLE IF NOT EXISTS customer_errors_has_no_pair AS SELECT " +
-            "c.customer_inn_err AS customer_inn_err, c.customer_kpp_err AS customer_kpp_err," +
-            "c.seller_inn_err AS seller_inn_err, c.seller_kpp_err AS seller_kpp_err, " +
-            "c.total_with_tax_err AS total_with_tax_err, c.total_without_tax_err AS total_without_tax_err " +
-            "FROM customer_errors c left JOIN " +
-            "(SELECT " +
-            "chp.customer_inn_err AS customer_inn_err, " +
-            "chp.customer_kpp_err AS customer_kpp_err," +
-            "chp.seller_inn_err AS seller_inn_err, " +
-            "chp.seller_kpp_err AS seller_kpp_err, " +
-            "chp.total_with_tax_err AS total_with_tax_err, " +
-            "chp.total_without_tax_err AS total_without_tax_err " +
-            "FROM  customer_errors_customer_has_pair chp FULL JOIN customer_errors_seller_has_pair shp " +
-            "ON chp.customer_inn_err = shp.customer_inn_err AND chp.customer_kpp_err = shp.customer_kpp_err AND " +
-            "chp.total_with_tax_err = shp.total_with_tax_err AND chp.total_without_tax_err = shp.total_without_tax_err " +
-            ") s " +
-            "ON s.customer_inn_err = c.customer_inn_err AND s.customer_kpp_err = c.customer_kpp_err and " +
-            "c.seller_inn_err = s.seller_inn_err AND s.seller_kpp_err = c.seller_kpp_err " +
-            "Where s.customer_inn_err IS null AND s.customer_kpp_err IS null and " +
-            "s.seller_inn_err IS null AND s.seller_kpp_err IS null";
-
-    // #9
-    public static String QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR = "CREATE TABLE IF NOT EXISTS seller_errors_has_no_pair AS SELECT " +
-            "s.seller_inn_err AS seller_inn_err, s.seller_kpp_err AS seller_kpp_err, " +
-            "s.customer_inn_err AS customer_inn_err, s.customer_kpp_err AS customer_kpp_err, " +
-            "s.total_with_tax_err AS total_with_tax_err, s.total_without_tax_err AS total_without_tax_err " +
-            "FROM seller_errors s left JOIN    " +
-            "(SELECT  " +
-            "shp.customer_inn_err AS customer_inn_err,  " +
-            "shp.customer_kpp_err AS customer_kpp_err, " +
-            "shp.seller_inn_err AS seller_inn_err,  " +
-            "shp.seller_kpp_err AS seller_kpp_err,  " +
-            "shp.total_with_tax_err AS total_with_tax_err,  " +
-            "shp.total_without_tax_err AS total_without_tax_err " +
-            "FROM seller_errors_seller_has_pair shp FULL JOIN seller_errors_customer_has_pair chp " +
-            "ON chp.customer_inn_err = shp.customer_inn_err AND chp.customer_kpp_err = shp.customer_kpp_err AND " +
-            "chp.total_with_tax_err = shp.total_with_tax_err AND chp.total_without_tax_err = shp.total_without_tax_err " +
-            ") c " +
-            "ON s.customer_inn_err = c.customer_inn_err AND s.customer_kpp_err = c.customer_kpp_err and  " +
-            "c.seller_inn_err = s.seller_inn_err AND s.seller_kpp_err = c.seller_kpp_err " +
-            "Where c.customer_inn_err IS null AND c.customer_kpp_err IS null and  " +
-            "c.seller_inn_err IS null AND c.seller_kpp_err IS null ";
 
     public static String QUERY_DROP_C = "DROP TABLE seller";
     public static String QUERY_DROP_S = "DROP TABLE customer";
@@ -268,6 +147,20 @@ public class GenerateTables {
     public static String QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR = "DROP TABLE seller_errors_has_no_pair";
     public static String QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR = "DROP TABLE customer_errors_has_no_pair";
 
+    public GenerateTables(String queriesCreateFilePath, String queriesCompareFilePath) {
+        this.pathname = queriesCreateFilePath;
+        this.sqlread = new SQLReader();
+        this.queries = sqlread.readQueries(pathname);  //Read CREATE / DROP queries
+        this.pathname = queriesCompareFilePath;
+        this.queries = sqlread.readQueries(pathname);  //Read COMPARE queries
+
+        for (Map.Entry<String, String> entry : queries.entrySet()) {
+            System.out.println(entry.getKey());
+        }
+
+    }
+
+    // Load from csv file
     //static String csv_path ="'/home/student1/Documents/hadoop-tax-fl/data.csv'";
     //public static String QUERY_LOAD = "LOAD DATA LOCAL INPATH " + csv_path +  " OVERWRITE INTO TABLE employee";
 
@@ -275,8 +168,8 @@ public class GenerateTables {
 
         try {
             Statement stmt = con.createStatement();
-            stmt.execute(QUERY_CREATE_SELLER);
-            stmt.execute(QUERY_CREATE_CUSTOMER);
+            stmt.execute(queries.get("QUERY_CREATE_SELLER"));
+            stmt.execute(queries.get("QUERY_CREATE_CUSTOMER"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -293,22 +186,21 @@ public class GenerateTables {
         }
     }
 
-
     public static void CompareTables(Connection con) {
         try {
             Statement stmt = con.createStatement();
-            stmt.execute(QUERY_COMPARE_SELLER_ERR);
-            stmt.execute(QUERY_COMPARE_CUSTOMER_ERR);
-            //stmt.execute(QUERY_COMPARE_SELL_CORR);
-            //stmt.execute(QUERY_COMPARE_CUST_CORR);
-            //stmt.execute(QUERY_COMPARE_CORR_COMPLETELY);
-            //stmt.execute(QUERY_COMPARE_CORR_TOTAL_DIFF);
-            stmt.execute(QUERY_COMPARE_SELLER_ERROR_CUSTOMER_HAS_PAIR);
-            stmt.execute(QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR);
-            stmt.execute(QUERY_COMPARE_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR);
-            stmt.execute(QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR);
-            stmt.execute(QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR);
-            stmt.execute(QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR);
+            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERR"));
+            stmt.execute(queries.get("QUERY_COMPARE_SELLER_CORR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_CORR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_COMPLETELY"));
+            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_TOTAL_DIFF"));
+            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_CUSTOMER_HAS_PAIR"));
+            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
+//            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR)"));
+//            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -329,8 +221,8 @@ public class GenerateTables {
             stmt.execute(QUERY_DROP_CUSTOMER_ERROR_SELLER_HAS_PAIR);
             stmt.execute(QUERY_DROP_SELLER_ERROR_SELLER_HAS_PAIR);
             stmt.execute(QUERY_DROP_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR);
-            //stmt.execute(QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR);
-            //stmt.execute(QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR);
+            stmt.execute(QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR);
+            stmt.execute(QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -356,7 +248,7 @@ public class GenerateTables {
         String tmp[] = TableName.split("_");
         RecordType rt = RecordType.valueOf(tmp[0]);
         Statement stmt = null;
-        try{
+        try {
             stmt = con.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -391,7 +283,15 @@ public class GenerateTables {
 
     public static void main(String[] args) throws SQLException {
 
+      /*GenerateTables gt = new GenerateTables();
         Connection con = Connect();
+        gt.DeleteTables(con);
+        gt.CreateTables(con);
+
+        InsertSellerIntoTable(con,"111,222,333,444,555 ");
+        InsertSellerIntoTable(con,"112,223,334,445,555 ");
+        InsertCustomerIntoTable(con,"333,444,111,222,555");
+        InsertCustomerIntoTable(con,"334,445,112,223,556"); */
 
     }
 }

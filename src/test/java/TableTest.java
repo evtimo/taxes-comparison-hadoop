@@ -12,9 +12,13 @@ import java.util.List;
 public class TableTest extends AbstractTestNGCucumberTests {
     /*private SellerRecord seller;
     private CustomerRecord customer;*/
+
+    private String queriesCreateFilePath = "src/main/resources/queries.hql";
+    private String queriesCompareFilePath = "src/main/resources/queries_compare.hql";
+
     private TableRecord seller;
     private TableRecord customer;
-    private GenerateTables tab = new GenerateTables();
+    private GenerateTables tab = new GenerateTables(queriesCreateFilePath, queriesCompareFilePath);
     private Connection con;
 
     @Given("^Table (.*) and (.*)")
