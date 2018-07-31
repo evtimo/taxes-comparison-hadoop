@@ -12,6 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.5" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hive:hive-jdbc:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hive:hive-common:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
@@ -61,7 +62,7 @@
     <orderEntry type="module-library">
       <library name="Maven: jdk.tools:jdk.tools:1.6">
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/jdk/tools/jdk.tools/1.6/jdk.tools-1.6.jar!/" />
+          <root url="jar:///usr/lib/jvm/java-7-oracle-cloudera/lib/tools.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

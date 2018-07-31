@@ -1,8 +1,12 @@
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Properties;
 
 class TableRecord {
 
@@ -13,27 +17,28 @@ class TableRecord {
     private double total;
     RecordType recordType;
 
-    TableRecord(String rec, RecordType rt) {
+
+    TableRecord(CSVRecord rec, RecordType rt) {
         this.recordType = rt;
-        String[] columns = rec.split(",");
         switch (recordType) {
             case seller:
-                this.setSeller_inn(columns[0]);
-                this.setSeller_kpp(columns[1]);
-                this.setCustomer_inn(columns[2]);
-                this.setCustomer_kpp(columns[3]);
-                this.setTotal(Double.parseDouble(columns[4]));
+                this.setSeller_inn(rec.get(0));
+                this.setSeller_kpp(rec.get(1));
+                this.setCustomer_inn(rec.get(2));
+                this.setCustomer_kpp(rec.get(3));
+                this.setTotal(Double.parseDouble(rec.get(4)));
                 break;
             case customer:
 
-                this.setCustomer_inn(columns[0]);
-                this.setCustomer_kpp(columns[1]);
-                this.setSeller_inn(columns[2]);
-                this.setSeller_kpp(columns[3]);
-                this.setTotal(Double.parseDouble(columns[4]));
+                this.setCustomer_inn(rec.get(0));
+                this.setCustomer_kpp(rec.get(1));
+                this.setSeller_inn(rec.get(2));
+                this.setSeller_kpp(rec.get(3));
+                this.setTotal(Double.parseDouble(rec.get(4)));
                 break;
         }
     }
+
 
     @Override
     public String toString() {
@@ -147,15 +152,24 @@ public class GenerateTables {
     public static String QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR = "DROP TABLE seller_errors_has_no_pair";
     public static String QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR = "DROP TABLE customer_errors_has_no_pair";
 
-    public GenerateTables(String queriesCreateFilePath, String queriesCompareFilePath) {
-        this.pathname = queriesCreateFilePath;
+    public GenerateTables() {
+        Properties prop = new Properties();
+        try {
+            FileInputStream fileInputStream = new FileInputStream("src/main/resources/config.properties");
+        prop.load(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.pathname = prop.getProperty("queriesCreateFilePath");
         this.sqlread = new SQLReader();
         this.queries = sqlread.readQueries(pathname);  //Read CREATE / DROP queries
-        this.pathname = queriesCompareFilePath;
+        this.pathname = prop.getProperty("queriesCompareFilePath");
         this.queries = sqlread.readQueries(pathname);  //Read COMPARE queries
 
         for (Map.Entry<String, String> entry : queries.entrySet()) {
             System.out.println(entry.getKey());
+
         }
 
     }
@@ -170,11 +184,11 @@ public class GenerateTables {
             Statement stmt = con.createStatement();
             stmt.execute(queries.get("QUERY_CREATE_SELLER"));
             stmt.execute(queries.get("QUERY_CREATE_CUSTOMER"));
+//            Process process = Runtime.getRuntime().exec("hive < production/queries.hql");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
     public static void DeleteTables(Connection con) {
 
         try {
@@ -191,20 +205,24 @@ public class GenerateTables {
             Statement stmt = con.createStatement();
             stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERR"));
             stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_CORR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_CORR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_COMPLETELY"));
-            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_TOTAL_DIFF"));
+//            stmt.execute(queries.get("QUERY_COMPARE_SELLER_CORR"));
+//            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_CORR"));
+//            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_COMPLETELY"));
+//            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_TOTAL_DIFF"));
             stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_CUSTOMER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR"));
+//            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR"));
             stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
+//            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
 //            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR)"));
 //            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR"));
+            //Process process = Runtime.getRuntime().exec("hive < production/queries_match.hql");
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
+        }
     }
 
     public static void DropCompareTables(Connection con) {
@@ -223,6 +241,7 @@ public class GenerateTables {
             stmt.execute(QUERY_DROP_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR);
             stmt.execute(QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR);
             stmt.execute(QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -263,15 +282,18 @@ public class GenerateTables {
         }
 
         ResultSet rs = stmt.getResultSet();
+
         List<TableRecord> table = new ArrayList<TableRecord>();
+
         while (rs.next()) {
+
             rec = rs.getString(1) + ","
                     + rs.getString(2) + ","
                     + rs.getString(3) + ","
                     + rs.getString(4) + ","
                     + rs.getString(5);
 
-            table.add(new TableRecord(rec, rt));
+//            table.add(new TableRecord(rec, rt));
         }
 
         for (int i = 0; i < table.size(); i++) {
@@ -282,7 +304,6 @@ public class GenerateTables {
     }
 
     public static void main(String[] args) throws SQLException {
-
       /*GenerateTables gt = new GenerateTables();
         Connection con = Connect();
         gt.DeleteTables(con);
