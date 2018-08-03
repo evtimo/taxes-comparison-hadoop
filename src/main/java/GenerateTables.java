@@ -1,7 +1,7 @@
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,8 +130,6 @@ public class GenerateTables {
     private String pathname;
     private SQLReader sqlread;
 
-    //System.out.println(queries_01.get("TEST NAME1"));
-
     private static String driverName = "org.apache.hive.jdbc.HiveDriver";
 
     public static String URL = "jdbc:hive2://localhost:10000";
@@ -156,7 +154,7 @@ public class GenerateTables {
         Properties prop = new Properties();
         try {
             FileInputStream fileInputStream = new FileInputStream("src/main/resources/config.properties");
-        prop.load(fileInputStream);
+            prop.load(fileInputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -168,13 +166,11 @@ public class GenerateTables {
         this.queries = sqlread.readQueries(pathname);  //Read COMPARE queries
 
         for (Map.Entry<String, String> entry : queries.entrySet()) {
-            System.out.println(entry.getKey());
-
+            //System.out.println(entry.getKey());
         }
-
     }
 
-    // Load from csv file
+    //Load from csv file
     //static String csv_path ="'/home/student1/Documents/hadoop-tax-fl/data.csv'";
     //public static String QUERY_LOAD = "LOAD DATA LOCAL INPATH " + csv_path +  " OVERWRITE INTO TABLE employee";
 
@@ -184,11 +180,13 @@ public class GenerateTables {
             Statement stmt = con.createStatement();
             stmt.execute(queries.get("QUERY_CREATE_SELLER"));
             stmt.execute(queries.get("QUERY_CREATE_CUSTOMER"));
-//            Process process = Runtime.getRuntime().exec("hive < production/queries.hql");
+            //How it should be in the future on server:
+            //Process process = Runtime.getRuntime().exec("hive < production/queries.hql");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public static void DeleteTables(Connection con) {
 
         try {
@@ -205,23 +203,19 @@ public class GenerateTables {
             Statement stmt = con.createStatement();
             stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERR"));
             stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERR"));
-//            stmt.execute(queries.get("QUERY_COMPARE_SELLER_CORR"));
-//            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_CORR"));
-//            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_COMPLETELY"));
-//            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_TOTAL_DIFF"));
+            stmt.execute(queries.get("QUERY_COMPARE_SELLER_CORR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_CORR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_COMPLETELY"));
+            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_TOTAL_DIFF"));
             stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_CUSTOMER_HAS_PAIR"));
-//            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR"));
+            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR"));
             stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR"));
-//            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
-//            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR)"));
-//            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR"));
+            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
+            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR)"));
+            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR"));
             //Process process = Runtime.getRuntime().exec("hive < production/queries_match.hql");
         } catch (SQLException e) {
             e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         }
     }
 
@@ -248,7 +242,7 @@ public class GenerateTables {
 
     }
 
-    public static Connection Connect() {
+    public static Connection connect() {
         try {
             Class.forName(driverName);
             Connection con = DriverManager.getConnection(URL);
@@ -293,7 +287,7 @@ public class GenerateTables {
                     + rs.getString(4) + ","
                     + rs.getString(5);
 
-//            table.add(new TableRecord(rec, rt));
+            //table.add(new TableRecord(rec, rt));
         }
 
         for (int i = 0; i < table.size(); i++) {
@@ -304,8 +298,12 @@ public class GenerateTables {
     }
 
     public static void main(String[] args) throws SQLException {
+
+        //Use this code to run programm for the first time
+        //Create all tables and insert your data from CVS or manually
+
       /*GenerateTables gt = new GenerateTables();
-        Connection con = Connect();
+        Connection con = connect();
         gt.DeleteTables(con);
         gt.CreateTables(con);
 

@@ -1,3 +1,4 @@
+import cucumber.api.CucumberOptions;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -6,21 +7,24 @@ import org.testng.Assert;
 import java.io.IOException;
 import java.sql.SQLException;
 
+@CucumberOptions(features = "src/test/resources/feature/CustomerHasNoPair.feature")
 public class TableTestCustomerHasNoPair extends TableTest {
 
     @Given("^Table (.*) and (.*) with completely damaged seller field$")
     public void given(String a, String b) throws IOException {
-        superGiven(a,b);
+        super.given(a, b);
     }
 
     @When("^we put data with completely damaged seller field into DataBase$")
-    public void When() {
-        superWhen();
-
+    public void when() {
+        super.when();
     }
 
     @Then("^(.*) should contain original customer record$")
-    public void then (String tableName1) throws SQLException {
+    public void then(String tableName1) throws SQLException {
+
+        // Testing with local data
+
         Assert.assertEquals(customerRecord.get("seller_inn_err"),
                 customerRecord.get("seller_inn_err"));
         Assert.assertEquals(customerRecord.get("seller_kpp_err"),
@@ -34,8 +38,10 @@ public class TableTestCustomerHasNoPair extends TableTest {
         Assert.assertEquals(customerRecord.get("total_with_tax_err"),
                 customerRecord.get("total_with_tax_err"));
 
-/*
-        ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
+        // Testing with data from Hive
+
+
+     /*   ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
 
         Assert.assertEquals(customerRecord.get("seller_inn_corr"),
                 customerFromTable.getString("seller_inn_corr"));
@@ -49,6 +55,6 @@ public class TableTestCustomerHasNoPair extends TableTest {
                 customerFromTable.getString("total_without_tax_corr"));
         Assert.assertEquals(customerRecord.get("total_with_tax_corr"),
                 customerFromTable.getString("total_with_tax_corr"));
-*/
+    */
     }
 }

@@ -1,26 +1,31 @@
+import cucumber.api.CucumberOptions;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.testng.Assert;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@CucumberOptions(features ="src/test/resources/feature/SellerHasPair.feature")
 public class TableTestSellerHasPair extends TableTest {
 
     @Given("^Table (.*) and (.*) with incorrect customer fields$")
     public void given(String a, String b) throws IOException {
-        superGiven(a,b);
+        super.given(a,b);
     }
 
     @When("^we put data with incorrect customer fields into DataBase$")
-    public void When() {
-        superWhen();
-
+    public void when() {
+        super.when();
     }
 
     @Then("^(.*) and (.*) should have different customer fields$")
     public void then (String tableName1, String tableName2) throws SQLException {
+
+        // Testing with local data
+
         Assert.assertEquals(sellerRecord.get("seller_inn_err"),
                 sellerRecord.get("seller_inn_err"));
         Assert.assertEquals(sellerRecord.get("seller_kpp_err"),
@@ -47,7 +52,9 @@ public class TableTestSellerHasPair extends TableTest {
         Assert.assertEquals(customerRecord.get("total_with_tax_err"),
                 customerRecord.get("total_with_tax_err"));
 
-/*
+        // Testing with data from Hive
+
+       /*
         ResultSet sellerFromTable = getResultSetFromTable(con,tableName1);
         ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
 
@@ -76,6 +83,5 @@ public class TableTestSellerHasPair extends TableTest {
                 customerFromTable.getString("total_without_tax_corr"));
         Assert.assertEquals(customerRecord.get("total_with_tax_corr"),
                 customerFromTable.getString("total_with_tax_corr"));
-*/
-    }
+    */}
 }

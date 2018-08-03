@@ -1,0 +1,59 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="SuiteName">
+    <test name="TableTestCorrectCompletely">
+        <classes>
+            <class name="TableTestCorrectCompletely">
+                <methods>
+                    <include name="testMethod"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+    <test name="TableTestCorrectTotalDiff">
+        <classes>
+            <class name="TableTestCorrectTotalDiff">
+                <methods>
+                    <include name="testMethod"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+    <test name="TableTestCustomerHasNoPair">
+        <classes>
+            <class name="TableTestCustomerHasNoPair">
+                <methods>
+                    <include name="testMethod"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="TableTestCustomerHasPair">
+        <classes>
+            <class name="TableTestCustomerHasPair">
+                <methods>
+                    <include name="testMethod"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="TableTestSellerHasNoPair">
+        <classes>
+            <class name="TableTestSellerHasNoPair">
+                <methods>
+                    <include name="testMethod"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    <test name="TableTestSellerHasPair">
+        <classes>
+            <class name="TableTestSellerHasPair">
+                <methods>
+                    <include name="testMethod"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/dataanalysisfl.iml" filepath="$PROJECT_DIR$/.idea/dataanalysisfl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hadoop-tax-fl.iml" filepath="$PROJECT_DIR$/hadoop-tax-fl.iml" />
     </modules>
   </component>
 </project>

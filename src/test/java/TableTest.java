@@ -1,35 +1,27 @@
-import cucumber.api.PendingException;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import cucumber.api.testng.AbstractTestNGCucumberTests;
-import javafx.scene.control.Tab;
-
-import java.io.*;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.*;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.codehaus.jackson.node.DoubleNode;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 abstract class TableTest extends AbstractTestNGCucumberTests {
 
+    public TableRecord seller;
     public TableRecord customer;
     public GenerateTables tab = new GenerateTables();
     public Connection con;
 
-    public CSVRecord sellerRecord;
-    public CSVRecord customerRecord;
+    CSVRecord sellerRecord;
+    CSVRecord customerRecord;
 
-    protected void superGiven(String a, String b) throws IOException {
+    protected void given(String a, String b) throws IOException {
 
         Reader csv_file = new FileReader(a);
 
@@ -48,11 +40,12 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         System.out.println(customer);
     }
 
-    public TableRecord seller;
 
-    protected void superWhen() {
+    protected void when() {
 
-/*        con = tab.Connect();
+        /* Connection to Hive Database.
+
+        con = tab.Connect();
 
         tab.DeleteTables(con);
         tab.CreateTables(con);
@@ -61,23 +54,21 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         customer.insertIntoTable(con);
 
         tab.DropCompareTables(con);
-        tab.CompareTables(con);
-*/
-
+        tab.CompareTables(con);*/
     }
 
-   // public abstract void then (String tableName1, String tableName2) throws SQLException;
-/*    {
+    /*
+    public abstract void then(String tableName1, String tableName2) throws SQLException {
 
-        ResultSet sellerFromTable = getResultSetFromTable(con,tableName1);
-        ResultSet customerFromTable = getResultSetFromTable(con,tableName2);
+        ResultSet sellerFromTable = getResultSetFromTable(con, tableName1);
+        ResultSet customerFromTable = getResultSetFromTable(con, tableName2);
 
         Assert.assertEquals(sellerRecord.get("total_with_tax_err"),
-                            sellerFromTable.getString("total_with_tax_err"));
+                sellerFromTable.getString("total_with_tax_err"));
         Assert.assertEquals(customerRecord.get("total_with_tax_err"),
-                            customerFromTable.getString("total_with_tax_err"));
+                customerFromTable.getString("total_with_tax_err"));
 
-    }*/
+    }
 
     public static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
         Statement stmt = null;
@@ -102,5 +93,6 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
         return rs;
     }
+    */
 }
 

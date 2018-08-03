@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="dataanalysisfl" />
+        <module name="hadoop-tax-fl" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="dataanalysisfl" target="1.5" />
+      <module name="hadoop-tax-fl" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
