@@ -1,3 +1,4 @@
 public enum RecordType {
-    seller, customer
+    SELLER,
+    CUSTOMER
 }

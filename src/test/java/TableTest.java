@@ -24,13 +24,13 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
         CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
         sellerRecord = parser.getRecords().get(0);
-        this.seller = new TableRecord(sellerRecord, RecordType.seller);
+        this.seller = new TableRecord(sellerRecord, RecordType.SELLER);
 
         csv_file = new FileReader(b);
 
         parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
         customerRecord = parser.getRecords().get(0);
-        this.customer = new TableRecord(customerRecord, RecordType.customer);
+        this.customer = new TableRecord(customerRecord, RecordType.CUSTOMER);
 
         parser.close();
         System.out.println(seller);
@@ -47,8 +47,8 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         tab.DeleteTables(con);
         tab.CreateTables(con);
 
-        seller.insertIntoTable(con);
-        customer.insertIntoTable(con);
+        SELLER.insertIntoTable(con);
+        CUSTOMER.insertIntoTable(con);
 
         tab.DropCompareTables(con);
         tab.CompareTables(con);*/
