@@ -2,17 +2,21 @@ import cucumber.api.testng.AbstractTestNGCucumberTests;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.testng.Assert;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 abstract class TableTest extends AbstractTestNGCucumberTests {
 
     public TableRecord seller;
     public TableRecord customer;
-    public GenerateTables tab = new GenerateTables();
+    //public GenerateTables tab = new GenerateTables();
     public Connection con;
 
     CSVRecord sellerRecord;
@@ -20,13 +24,13 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     protected void given(String a, String b) throws IOException {
 
-        Reader csv_file = new FileReader(a);
+        Reader csv_file = new FileReader("src/test/resources/" + a);
 
         CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
         sellerRecord = parser.getRecords().get(0);
         this.seller = new TableRecord(sellerRecord, RecordType.SELLER);
 
-        csv_file = new FileReader(b);
+        csv_file = new FileReader("src/test/resources/" + b);
 
         parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
         customerRecord = parser.getRecords().get(0);
@@ -54,8 +58,8 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         tab.CompareTables(con);*/
     }
 
-    /*
-    public abstract void then(String tableName1, String tableName2) throws SQLException {
+
+    public void then(String tableName1, String tableName2) throws SQLException {
 
         ResultSet sellerFromTable = getResultSetFromTable(con, tableName1);
         ResultSet customerFromTable = getResultSetFromTable(con, tableName2);
@@ -90,6 +94,6 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
         return rs;
     }
-    */
+
 }
 
