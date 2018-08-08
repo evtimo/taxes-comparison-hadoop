@@ -1,3 +1,5 @@
+package ru.spbstu;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -20,6 +22,15 @@ public class SQLReader {
         mapOfQueries = new HashMap<String, String>();
     }
 
+    /**
+     * Method finds in input string $-end and $-start symbols,
+     * gets substring between these positions
+     * In substring deletes all spaces and returns real name of SQL query
+     * that user added by himself in input file
+     * @param query
+     * @return query name
+     * @throws NoNameQueryException
+     */
     private String getQueryName(StringBuffer query) throws NoNameQueryException {
 
         String queryName;
@@ -36,12 +47,12 @@ public class SQLReader {
 
     }
 
-    /*
-     * @param   path    Path to the SQL file
-     * @return          List of query strings
+    /**
+     * @param path Path to the SQL file
+     * @return list of query strings
      */
     public Map<String, String> readQueries(String path) {
-        String queryLine = new String();
+        String queryLine;
         StringBuffer sBuffer = new StringBuffer();
 
 

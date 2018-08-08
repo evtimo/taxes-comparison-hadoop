@@ -1,3 +1,5 @@
+package ru.spbstu;
+
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.FileInputStream;
@@ -37,7 +39,7 @@ public class GenerateTables {
     public GenerateTables() {
         Properties prop = new Properties();
         try {
-            FileInputStream fileInputStream = new FileInputStream("src/main/resources/config.properties");
+            FileInputStream fileInputStream = new FileInputStream("taxes-generation/src/main/resources/config.properties");
             prop.load(fileInputStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,8 +66,10 @@ public class GenerateTables {
             Statement stmt = con.createStatement();
             stmt.execute(queries.get("QUERY_CREATE_SELLER"));
             stmt.execute(queries.get("QUERY_CREATE_CUSTOMER"));
+
             //How it should be in the future on server:
             //Process process = Runtime.getRuntime().exec("hive < production/queries.hql");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -186,15 +190,10 @@ public class GenerateTables {
         //Use this code to run programm for the first time
         //Create all tables and insert your data from CVS or manually
 
-      /*GenerateTables gt = new GenerateTables();
+        GenerateTables gt = new GenerateTables();
         Connection con = connect();
         gt.DeleteTables(con);
         gt.CreateTables(con);
-
-        InsertSellerIntoTable(con,"111,222,333,444,555 ");
-        InsertSellerIntoTable(con,"112,223,334,445,555 ");
-        InsertCustomerIntoTable(con,"333,444,111,222,555");
-        InsertCustomerIntoTable(con,"334,445,112,223,556"); */
 
     }
 }
