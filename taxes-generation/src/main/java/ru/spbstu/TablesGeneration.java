@@ -1,16 +1,16 @@
 package ru.spbstu;
 
-import org.apache.commons.csv.CSVRecord;
-
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 
-public class GenerateTables {
+
+public class TablesGeneration {
 
     public static Map<String, String> queries;
     private String pathname;
@@ -18,37 +18,39 @@ public class GenerateTables {
 
     private static String driverName = "org.apache.hive.jdbc.HiveDriver";
 
-    public static String URL = "jdbc:hive2://localhost:10000";
+    private String URL = "jdbc:hive2://localhost:10000";
 
-    public static String QUERY_DROP_C = "DROP TABLE seller";
-    public static String QUERY_DROP_S = "DROP TABLE customer";
-    public static String QUERY_DROP_SELLER_ERROR = "DROP TABLE seller_errors";
-    public static String QUERY_DROP_CUSTOMER_ERROR = "DROP TABLE customer_errors";
-    public static String QUERY_DROP_SELLER_CORRECT = "DROP TABLE seller_correct";
-    public static String QUERY_DROP_CUSTOMER_CORRECT = "DROP TABLE customer_correct";
-    public static String QUERY_DROP_SELLER_CORRECT_COMPLETELY = "DROP TABLE correct_completely";
-    public static String QUERY_DROP_CORRECT_TOTAL_DIFF = "DROP TABLE correct_total_diff";
+    private String QUERY_DROP_C = "DROP TABLE IF EXISTS seller";
+    private String QUERY_DROP_S = "DROP TABLE IF EXISTS customer";
+    private String QUERY_DROP_SELLER_ERROR = "DROP TABLE IF EXISTS seller_errors";
+    private String QUERY_DROP_CUSTOMER_ERROR = "DROP TABLE IF EXISTS customer_errors";
+    private String QUERY_DROP_SELLER_CORRECT = "DROP TABLE IF EXISTS seller_correct";
+    private String QUERY_DROP_CUSTOMER_CORRECT = "DROP TABLE IF EXISTS customer_correct";
+    private String QUERY_DROP_SELLER_CORRECT_COMPLETELY = "DROP TABLE IF EXISTS correct_completely";
+    private String QUERY_DROP_CORRECT_TOTAL_DIFF = "DROP TABLE IF EXISTS correct_total_diff";
+    private String QUERY_DROP_SELLER_ERROR_SELLER_HAS_PAIR = "DROP TABLE IF EXISTS seller_errors_seller_has_pair";
+    private String QUERY_DROP_SELLER_ERROR_CUSTOMER_HAS_PAIR = "DROP TABLE IF EXISTS seller_errors_customer_has_pair";
+    private String QUERY_DROP_CUSTOMER_ERROR_SELLER_HAS_PAIR = "DROP TABLE IF EXISTS customer_errors_seller_has_pair";
+    private String QUERY_DROP_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR = "DROP TABLE IF EXISTS customer_errors_customer_has_pair";
+    private String QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR = "DROP TABLE IF EXISTS seller_errors_has_no_pair";
+    private String QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR = "DROP TABLE IF EXISTS customer_errors_has_no_pair";
 
-    public static String QUERY_DROP_SELLER_ERROR_SELLER_HAS_PAIR = "DROP TABLE seller_errors_seller_has_pair";
-    public static String QUERY_DROP_SELLER_ERROR_CUSTOMER_HAS_PAIR = "DROP TABLE seller_errors_customer_has_pair";
-    public static String QUERY_DROP_CUSTOMER_ERROR_SELLER_HAS_PAIR = "DROP TABLE customer_errors_seller_has_pair";
-    public static String QUERY_DROP_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR = "DROP TABLE customer_errors_customer_has_pair";
-    public static String QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR = "DROP TABLE seller_errors_has_no_pair";
-    public static String QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR = "DROP TABLE customer_errors_has_no_pair";
+    private TablesGeneration() {
+        String resourceName = "config.properties";
 
-    public GenerateTables() {
-        Properties prop = new Properties();
-        try {
-            FileInputStream fileInputStream = new FileInputStream("taxes-generation/src/main/resources/config.properties");
-            prop.load(fileInputStream);
+        //FileInputStream fileInputStream = new FileInputStream("taxes-generation/src/main/resources/config.properties");
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Properties props = new Properties();
+        try (InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
+            props.load(resourceStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        this.pathname = prop.getProperty("queriesCreateFilePath");
+        this.pathname = props.getProperty("queriesCreateFilePath");
         this.sqlread = new SQLReader();
         this.queries = sqlread.readQueries(pathname);  //Read CREATE / DROP queries
-        this.pathname = prop.getProperty("queriesCompareFilePath");
+        this.pathname = props.getProperty("queriesCompareFilePath");
         this.queries = sqlread.readQueries(pathname);  //Read COMPARE queries
 
         for (Map.Entry<String, String> entry : queries.entrySet()) {
@@ -60,7 +62,7 @@ public class GenerateTables {
     //static String csv_path ="'/home/student1/Documents/hadoop-tax-fl/data.csv'";
     //public static String QUERY_LOAD = "LOAD DATA LOCAL INPATH " + csv_path +  " OVERWRITE INTO TABLE employee";
 
-    public static void CreateTables(Connection con) {
+    private static void createTables(Connection con) {
 
         try {
             Statement stmt = con.createStatement();
@@ -75,18 +77,7 @@ public class GenerateTables {
         }
     }
 
-    public static void DeleteTables(Connection con) {
-
-        try {
-            Statement stmt = con.createStatement();
-            stmt.execute(QUERY_DROP_S);
-            stmt.execute(QUERY_DROP_C);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void CompareTables(Connection con) {
+    private static void compareTables(Connection con) {
         try {
             Statement stmt = con.createStatement();
             stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERR"));
@@ -107,10 +98,12 @@ public class GenerateTables {
         }
     }
 
-    public static void DropCompareTables(Connection con) {
+    private void dropAllTables(Connection con) {
         try {
             Statement stmt = con.createStatement();
 
+            stmt.execute(QUERY_DROP_S);
+            stmt.execute(QUERY_DROP_C);
             stmt.execute(QUERY_DROP_CORRECT_TOTAL_DIFF);
             stmt.execute(QUERY_DROP_SELLER_CORRECT_COMPLETELY);
             stmt.execute(QUERY_DROP_SELLER_CORRECT);
@@ -127,10 +120,9 @@ public class GenerateTables {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
-    public static Connection connect() {
+    private Connection connect() {
         try {
             Class.forName(driverName);
             Connection con = DriverManager.getConnection(URL);
@@ -190,10 +182,11 @@ public class GenerateTables {
         //Use this code to run programm for the first time
         //Create all tables and insert your data from CVS or manually
 
-        GenerateTables gt = new GenerateTables();
-        Connection con = connect();
-        gt.DeleteTables(con);
-        gt.CreateTables(con);
+        TablesGeneration tg = new TablesGeneration();
+        Connection con = tg.connect();
+        tg.dropAllTables(con);
+        tg.createTables(con);
+        tg.compareTables(con);
 
     }
 }

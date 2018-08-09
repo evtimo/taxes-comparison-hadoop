@@ -9,7 +9,7 @@
     </properties>
 
     <groupId>fls</groupId>
-    <artifactId>hadoop-tax-match-tests</artifactId>
+    <artifactId>taxes-match-tests</artifactId>
     <version>1.0-SNAPSHOT</version>
     <dependencies>
         <dependency>
@@ -28,14 +28,12 @@
 
 
         <!-- TEST DEPENDENCIES -->
-
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.10</version>
             <scope>test</scope>
         </dependency>
-
 
         <dependency>
             <groupId>info.cukes</groupId>

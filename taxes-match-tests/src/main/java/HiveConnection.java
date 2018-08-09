@@ -18,7 +18,6 @@ class HiveConnection {
             if (instance == null) {
                 instance = new HiveConnection();
             }
-
             return new HiveConnection().instance.con;
         }
     }
@@ -27,9 +26,13 @@ class HiveConnection {
         try {
             Class.forName(driverName);
             instance.con = DriverManager.getConnection(URL);
-            //instance.con = new org.apache.hive.jdbc.HiveConnection(URL, new Properties());
+            // instance.con = new org.apache.hive.jdbc.HiveConnection(URL, new Properties());
         } catch (SQLException e) {
             e.printStackTrace();
+            onProgramExit();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            onProgramExit();
         } finally {
             try {
                 con.close();
@@ -42,9 +45,7 @@ class HiveConnection {
         for (Thread t : threadSet) {
             try {
                 t.join();
-            } catch (InterruptedException ex) {
-
-            }
+            } catch (InterruptedException ex) {/* ignore*/}
         }
     }
 }
