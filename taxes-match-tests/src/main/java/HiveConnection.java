@@ -11,32 +11,27 @@ class HiveConnection {
 
     private static String driverName = "org.apache.hive.jdbc.HiveDriver";
 
-    private static String URL = "jdbc:hive://localhost:10000";
+    private static String URL = "jdbc:hive2://localhost:10000";
 
     static Connection getInstance() {
         synchronized (HiveConnection.class) {
             if (instance == null) {
                 instance = new HiveConnection();
             }
-            return new HiveConnection().instance.con;
+            return instance.con;
         }
     }
 
     private HiveConnection() {
         try {
-            Class.forName(driverName);
-            instance.con = DriverManager.getConnection(URL);
-            // instance.con = new org.apache.hive.jdbc.HiveConnection(URL, new Properties());
+           Class.forName(driverName);
+           con = DriverManager.getConnection(URL);
         } catch (SQLException e) {
             e.printStackTrace();
-            onProgramExit();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            onProgramExit();
         } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {/* ignore*/}
+            if(con != null) try {con.close();} catch (SQLException e) {/* ignore*/}
         }
     }
 
@@ -45,7 +40,9 @@ class HiveConnection {
         for (Thread t : threadSet) {
             try {
                 t.join();
-            } catch (InterruptedException ex) {/* ignore*/}
+            } catch (InterruptedException ex) {
+
+            }
         }
     }
 }
