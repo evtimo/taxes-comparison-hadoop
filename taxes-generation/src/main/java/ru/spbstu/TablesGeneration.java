@@ -9,10 +9,9 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 
-
 public class TablesGeneration {
 
-    public static Map<String, String> queries;
+    private static Map<String, String> queries;
     private String pathname;
     private SQLReader sqlread;
 
@@ -20,25 +19,9 @@ public class TablesGeneration {
 
     private String URL = "jdbc:hive2://localhost:10000";
 
-    private String QUERY_DROP_C = "DROP TABLE IF EXISTS seller";
-    private String QUERY_DROP_S = "DROP TABLE IF EXISTS customer";
-    private String QUERY_DROP_SELLER_ERROR = "DROP TABLE IF EXISTS seller_errors";
-    private String QUERY_DROP_CUSTOMER_ERROR = "DROP TABLE IF EXISTS customer_errors";
-    private String QUERY_DROP_SELLER_CORRECT = "DROP TABLE IF EXISTS seller_correct";
-    private String QUERY_DROP_CUSTOMER_CORRECT = "DROP TABLE IF EXISTS customer_correct";
-    private String QUERY_DROP_SELLER_CORRECT_COMPLETELY = "DROP TABLE IF EXISTS correct_completely";
-    private String QUERY_DROP_CORRECT_TOTAL_DIFF = "DROP TABLE IF EXISTS correct_total_diff";
-    private String QUERY_DROP_SELLER_ERROR_SELLER_HAS_PAIR = "DROP TABLE IF EXISTS seller_errors_seller_has_pair";
-    private String QUERY_DROP_SELLER_ERROR_CUSTOMER_HAS_PAIR = "DROP TABLE IF EXISTS seller_errors_customer_has_pair";
-    private String QUERY_DROP_CUSTOMER_ERROR_SELLER_HAS_PAIR = "DROP TABLE IF EXISTS customer_errors_seller_has_pair";
-    private String QUERY_DROP_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR = "DROP TABLE IF EXISTS customer_errors_customer_has_pair";
-    private String QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR = "DROP TABLE IF EXISTS seller_errors_has_no_pair";
-    private String QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR = "DROP TABLE IF EXISTS customer_errors_has_no_pair";
-
     private TablesGeneration() {
         String resourceName = "config.properties";
 
-        //FileInputStream fileInputStream = new FileInputStream("taxes-generation/src/main/resources/config.properties");
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Properties props = new Properties();
         try (InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
@@ -46,33 +29,21 @@ public class TablesGeneration {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        sqlread = new SQLReader();
 
-        this.pathname = props.getProperty("queriesCreateFilePath");
-        this.sqlread = new SQLReader();
-        this.queries = sqlread.readQueries(pathname);  //Read CREATE / DROP queries
-        this.pathname = props.getProperty("queriesCompareFilePath");
-        this.queries = sqlread.readQueries(pathname);  //Read COMPARE queries
-
-        for (Map.Entry<String, String> entry : queries.entrySet()) {
-            //System.out.println(entry.getKey());
-        }
+        pathname = props.getProperty("queriesCompareFilePath");
+        queries = sqlread.readQueries(pathname);  //Read COMPARE queries
+        pathname = props.getProperty("queriesCreateFilePath");
+        //this.queries = sqlread.readQueries(pathname);  //Read CREATE / DROP queries
     }
 
-    //Load from csv file
-    //static String csv_path ="'/home/student1/Documents/hadoop-tax-fl/data.csv'";
-    //public static String QUERY_LOAD = "LOAD DATA LOCAL INPATH " + csv_path +  " OVERWRITE INTO TABLE employee";
+    private void createTables(Connection con) {
 
     private static void createTables(Connection con) {
 
         try {
-            Statement stmt = con.createStatement();
-            stmt.execute(queries.get("QUERY_CREATE_SELLER"));
-            stmt.execute(queries.get("QUERY_CREATE_CUSTOMER"));
-
-            //How it should be in the future on server:
-            //Process process = Runtime.getRuntime().exec("hive < production/queries.hql");
-
-        } catch (SQLException e) {
+            Process process = Runtime.getRuntime().exec("hive -f " + this.pathname);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -92,7 +63,6 @@ public class TablesGeneration {
             stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
             stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR)"));
             stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR"));
-            //Process process = Runtime.getRuntime().exec("hive < production/queries_match.hql");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -101,22 +71,10 @@ public class TablesGeneration {
     private void dropAllTables(Connection con) {
         try {
             Statement stmt = con.createStatement();
-
-            stmt.execute(QUERY_DROP_S);
-            stmt.execute(QUERY_DROP_C);
-            stmt.execute(QUERY_DROP_CORRECT_TOTAL_DIFF);
-            stmt.execute(QUERY_DROP_SELLER_CORRECT_COMPLETELY);
-            stmt.execute(QUERY_DROP_SELLER_CORRECT);
-            stmt.execute(QUERY_DROP_CUSTOMER_CORRECT);
-            stmt.execute(QUERY_DROP_SELLER_ERROR);
-            stmt.execute(QUERY_DROP_CUSTOMER_ERROR);
-            stmt.execute(QUERY_DROP_SELLER_ERROR_CUSTOMER_HAS_PAIR);
-            stmt.execute(QUERY_DROP_CUSTOMER_ERROR_SELLER_HAS_PAIR);
-            stmt.execute(QUERY_DROP_SELLER_ERROR_SELLER_HAS_PAIR);
-            stmt.execute(QUERY_DROP_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR);
-            stmt.execute(QUERY_DROP_SELLER_ERROR_HAS_NO_PAIR);
-            stmt.execute(QUERY_DROP_CUSTOMER_ERROR_HAS_NO_PAIR);
-
+            for (Map.Entry<String, String> entry : queries.entrySet()) {
+                String tableName = entry.getKey();
+                stmt.execute("DROP TABLE IF EXISTS " + tableName);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -125,8 +83,7 @@ public class TablesGeneration {
     private Connection connect() {
         try {
             Class.forName(driverName);
-            Connection con = DriverManager.getConnection(URL);
-            return con;
+            return DriverManager.getConnection(URL);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
@@ -137,47 +94,7 @@ public class TablesGeneration {
         }
     }
 
-   /* public static List<TableRecord> getDataFromTable(Connection con, String TableName) throws SQLException {
-        String tmp[] = TableName.split("_");
-        RecordType rt = RecordType.valueOf(tmp[0]);
-        Statement stmt = null;
-        try {
-            stmt = con.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        String rec;
-        String QUERY_SHOW = "SELECT * FROM " + TableName;
-        try {
-            stmt.execute(QUERY_SHOW);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        ResultSet rs = stmt.getResultSet();
-
-        List<TableRecord> table = new ArrayList<TableRecord>();
-
-        while (rs.next()) {
-
-            rec = rs.getString(1) + ","
-                    + rs.getString(2) + ","
-                    + rs.getString(3) + ","
-                    + rs.getString(4) + ","
-                    + rs.getString(5);
-
-            //table.add(new TableRecord(rec, rt));
-        }
-
-        for (int i = 0; i < table.size(); i++) {
-            System.out.println(table.get(i).toString());
-        }
-
-        return table;
-    }*/
-
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
 
         //Use this code to run programm for the first time
         //Create all tables and insert your data from CVS or manually
@@ -187,6 +104,5 @@ public class TablesGeneration {
         tg.dropAllTables(con);
         tg.createTables(con);
         tg.compareTables(con);
-
     }
 }
