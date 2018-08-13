@@ -1,25 +1,35 @@
+import lombok.Getter;
+import lombok.Synchronized;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Set;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 class HiveConnection {
 
-    private static HiveConnection instance = null;
+    @NonFinal
+    static HiveConnection instance = null;
 
-    private Connection con;
+    @Getter
+    @NonFinal
+    Connection con;
 
-    private static String driverName = "org.apache.hive.jdbc.HiveDriver";
+    final static String driverName = "org.apache.hive.jdbc.HiveDriver";
 
-    private static String URL = "jdbc:hive2://localhost:10000";
+    final static String URL = "jdbc:hive2://localhost:10000";
 
-    static Connection getInstance() {
-        synchronized (HiveConnection.class) {
+    @Synchronized
+    static HiveConnection getInstance() {
             if (instance == null) {
                 instance = new HiveConnection();
             }
-            return instance.con;
-        }
+            return instance;
     }
 
     private HiveConnection() {
@@ -28,8 +38,10 @@ class HiveConnection {
            con = DriverManager.getConnection(URL);
         } catch (SQLException e) {
             e.printStackTrace();
+            onProgramExit();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            onProgramExit();
         } finally {
             if(con != null) try {con.close();} catch (SQLException e) {/* ignore*/}
         }

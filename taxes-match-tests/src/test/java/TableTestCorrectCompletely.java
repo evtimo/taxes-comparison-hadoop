@@ -5,15 +5,14 @@ import cucumber.api.java.en.When;
 import org.testng.Assert;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @CucumberOptions(features ="src/test/resources/feature/CorrectCompletely.feature")
 public class TableTestCorrectCompletely extends TableTest {
 
     @Given("^Table (.*) and (.*) with same fields$")
-    public void given(String a, String b) throws IOException {
-        super.given(a, b);
+    public void given(String sellerTable, String customerTable) throws IOException {
+        super.given(sellerTable, customerTable);
     }
 
     @When("^we put data with the same fields into DataBase$")

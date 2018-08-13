@@ -1,17 +1,25 @@
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.csv.CSVRecord;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@Getter
+@Setter
+@FieldDefaults(level = PRIVATE)
 class TableRecord {
 
-    private String seller_inn;
-    private String seller_kpp;
-    private String customer_inn;
-    private String customer_kpp;
-    private double total;
-    private RecordType recordType;
+    String seller_inn;
+    String seller_kpp;
+    String customer_inn;
+    String customer_kpp;
+    double total;
+    RecordType recordType;
 
     TableRecord(CSVRecord rec, RecordType rt) {
         this.recordType = rt;
@@ -24,7 +32,6 @@ class TableRecord {
                 this.setTotal(Double.parseDouble(rec.get(4)));
                 break;
             case CUSTOMER:
-
                 this.setCustomer_inn(rec.get(0));
                 this.setCustomer_kpp(rec.get(1));
                 this.setSeller_inn(rec.get(2));
@@ -34,18 +41,17 @@ class TableRecord {
         }
     }
 
-
     @Override
     public String toString() {
 
         switch (recordType) {
             case SELLER:
                 return getSeller_inn() + "," + getSeller_kpp() + "," + getCustomer_inn() + "," + getCustomer_kpp() + "," + getTotal() + ',' + getTotal();
-
             case CUSTOMER:
                 return getCustomer_inn() + "," + getCustomer_kpp() + "," + getSeller_inn() + "," + getSeller_kpp() + "," + getTotal() + ',' + getTotal();
+            default:
+                return "Error in TableRecord initialization! Only SELLER or CUSTOMER.";
         }
-        return "";
     }
 
     public void insertIntoTable(Connection con) {
@@ -77,44 +83,5 @@ class TableRecord {
             e.printStackTrace();
         }
     }
-
-    public String getSeller_inn() {
-        return seller_inn;
-    }
-
-    public String getSeller_kpp() {
-        return seller_kpp;
-    }
-
-    public String getCustomer_inn() {
-        return customer_inn;
-    }
-
-    public String getCustomer_kpp() {
-        return customer_kpp;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-    public void setSeller_inn(String seller_inn) {
-        this.seller_inn = seller_inn;
-    }
-
-    public void setSeller_kpp(String seller_kpp) {
-        this.seller_kpp = seller_kpp;
-    }
-
-    public void setCustomer_kpp(String customer_kpp) {
-        this.customer_kpp = customer_kpp;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }
-
-    public void setCustomer_inn(String customer_inn) {
-        this.customer_inn = customer_inn;
-    }
 }
+

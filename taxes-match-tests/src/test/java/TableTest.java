@@ -1,42 +1,44 @@
 import cucumber.api.testng.AbstractTestNGCucumberTests;
+import lombok.Cleanup;
+import lombok.experimental.FieldDefaults;
+import lombok.var;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.testng.Assert;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static lombok.AccessLevel.PRIVATE;
+
+@FieldDefaults(level = PRIVATE)
 abstract class TableTest extends AbstractTestNGCucumberTests {
 
-    private TableRecord seller;
-    private TableRecord customer;
-    //public GenerateTables tab = new GenerateTables();
-    private Connection con = HiveConnection.getInstance();
+    TableRecord seller;
+    TableRecord customer;
+    protected Connection con = HiveConnection.getInstance().getCon();
 
-    CSVRecord sellerRecord;
-    CSVRecord customerRecord;
+    protected CSVRecord sellerRecord;
+    protected CSVRecord customerRecord;
 
-    protected void given(String a, String b) throws IOException {
+    protected void given(String sellerTable, String customerTable) throws IOException {
 
-        Reader csv_file = new FileReader("src/test/resources/" + a);
+        var csv_file = new FileReader("src/test/resources/" + sellerTable);
 
-        CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
+        @Cleanup var parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
         sellerRecord = parser.getRecords().get(0);
         this.seller = new TableRecord(sellerRecord, RecordType.SELLER);
 
-        csv_file = new FileReader("src/test/resources/" + b);
+        csv_file = new FileReader("src/test/resources/" + customerTable);
 
         parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
         customerRecord = parser.getRecords().get(0);
         this.customer = new TableRecord(customerRecord, RecordType.CUSTOMER);
 
-        parser.close();
         System.out.println(seller);
         System.out.println(customer);
     }
@@ -59,7 +61,7 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
     }
 
 
-    /*public void then(String tableName1, String tableName2) throws SQLException {
+    public void then(String tableName1, String tableName2) throws SQLException {
 
         ResultSet sellerFromTable = getResultSetFromTable(con, tableName1);
         ResultSet customerFromTable = getResultSetFromTable(con, tableName2);
@@ -69,7 +71,7 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         Assert.assertEquals(customerRecord.get("total_with_tax_err"),
                 customerFromTable.getString("total_with_tax_err"));
 
-    }*/
+    }
 
     public static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
         Statement stmt = null;

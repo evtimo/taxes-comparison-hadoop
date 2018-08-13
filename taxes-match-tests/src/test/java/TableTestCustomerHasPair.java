@@ -11,8 +11,8 @@ import java.sql.SQLException;
 public class TableTestCustomerHasPair extends TableTest {
 
     @Given("^Table (.*) and (.*) with incorrect seller fields$")
-    public void given(String a, String b) throws IOException {
-        super.given(a,b);
+    public void given(String sellerTable, String customerTable) throws IOException {
+        super.given(sellerTable, customerTable);
     }
 
     @When("^we put data with incorrect seller fields into DataBase$")
