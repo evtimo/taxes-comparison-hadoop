@@ -12,7 +12,7 @@ import java.util.Properties;
 public class TablesGeneration {
 
     private static Map<String, String> queries;
-    private String pathname;
+    private String initPathName, comparePathName;
     private SQLReader sqlread;
 
     private static String driverName = "org.apache.hive.jdbc.HiveDriver";
@@ -31,38 +31,40 @@ public class TablesGeneration {
         }
         sqlread = new SQLReader();
 
-        pathname = props.getProperty("queriesCompareFilePath");
-        queries = sqlread.readQueries(pathname);  //Read COMPARE queries
-        pathname = props.getProperty("queriesCreateFilePath");
-        //this.queries = sqlread.readQueries(pathname);  //Read CREATE / DROP queries
+        comparePathName = props.getProperty("queriesCompareFilePath");
+        queries = sqlread.readQueries(comparePathName);  //Read COMPARE queries
+        initPathName = props.getProperty("queriesCreateFilePath");
+        //this.queries = sqlread.readQueries(initPathName);  //Read CREATE / DROP queries
     }
 
     private void createTables(Connection con) {
 
-    private static void createTables(Connection con) {
-
         try {
-            Process process = Runtime.getRuntime().exec("hive -f " + this.pathname);
+            Process process = Runtime.getRuntime().exec("hive -f " + this.initPathName);
+            process.waitFor();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private static void compareTables(Connection con) {
+        //TODO: executing ALL queries from file, even without names
         try {
             Statement stmt = con.createStatement();
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_CORR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_CORR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_COMPLETELY"));
-            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_TOTAL_DIFF"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_CUSTOMER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR)"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR"));
+            stmt.execute(queries.get("SELLER_ERRORS"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS"));
+            stmt.execute(queries.get("SELLER_CORRECT"));
+            stmt.execute(queries.get("CUSTOMER_CORRECT"));
+            stmt.execute(queries.get("CORRECT_COMPLETELY"));
+            stmt.execute(queries.get("CORRECT_TOTAL_DIFF"));
+            stmt.execute(queries.get("SELLER_ERRORS_CUSTOMER_HAS_PAIR"));
+            stmt.execute(queries.get("SELLER_ERRORS_SELLER_HAS_PAIR"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS_CUSTOMER_HAS_PAIR"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS_SELLER_HAS_PAIR"));
+            stmt.execute(queries.get("SELLER_ERRORS_HAS_NO_PAIR"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS_HAS_NO_PAIR"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -71,7 +73,9 @@ public class TablesGeneration {
     private void dropAllTables(Connection con) {
         try {
             Statement stmt = con.createStatement();
-            for (Map.Entry<String, String> entry : queries.entrySet()) {
+            stmt.execute("DROP TABLE IF EXISTS seller");
+	    stmt.execute("DROP TABLE IF EXISTS customer");
+	    for (Map.Entry<String, String> entry : queries.entrySet()) {
                 String tableName = entry.getKey();
                 stmt.execute("DROP TABLE IF EXISTS " + tableName);
             }
@@ -98,6 +102,7 @@ public class TablesGeneration {
 
         //Use this code to run programm for the first time
         //Create all tables and insert your data from CVS or manually
+        //TODO: method for loading csv ino SELLER and CUSTOMER tables
 
         TablesGeneration tg = new TablesGeneration();
         Connection con = tg.connect();
