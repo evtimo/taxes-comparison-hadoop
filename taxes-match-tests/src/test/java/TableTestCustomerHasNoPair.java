@@ -44,18 +44,18 @@ public class TableTestCustomerHasNoPair extends TableTest {
 
         ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
 
-        Assert.assertEquals(customerRecord.get("seller_inn_corr"),
-                customerFromTable.getString("seller_inn_corr"));
-        Assert.assertEquals(customerRecord.get("seller_kpp_corr"),
-                customerFromTable.getString("seller_kpp_corr"));
-        Assert.assertEquals(customerRecord.get("customer_inn_corr"),
-                customerFromTable.getString("customer_inn_corr"));
-        Assert.assertEquals(customerRecord.get("customer_kpp_corr"),
-                customerFromTable.getString("customer_kpp_corr"));
-        Assert.assertEquals(customerRecord.get("total_without_tax_corr"),
-                customerFromTable.getString("total_without_tax_corr"));
-        Assert.assertEquals(customerRecord.get("total_with_tax_corr"),
-                customerFromTable.getString("total_with_tax_corr"));
+        Assert.assertEquals(customerRecord.get("seller_inn_err"),
+                customerFromTable.getString("seller_inn_err"));
+        Assert.assertEquals(customerRecord.get("seller_kpp_err"),
+                customerFromTable.getString("seller_kpp_err"));
+        Assert.assertEquals(customerRecord.get("customer_inn_err"),
+                customerFromTable.getString("customer_inn_err"));
+        Assert.assertEquals(customerRecord.get("customer_kpp_err"),
+                customerFromTable.getString("customer_kpp_err"));
+        Assert.assertEquals(customerRecord.get("total_without_tax_err"),
+                customerFromTable.getString("total_without_tax_err"));
+        Assert.assertEquals(customerRecord.get("total_with_tax_err"),
+                customerFromTable.getString("total_with_tax_err"));
 
     }
 }

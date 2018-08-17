@@ -12,7 +12,7 @@ import java.util.Properties;
 public class TablesGeneration {
 
     private static Map<String, String> queries;
-    private String pathname;
+    private String initPathName, comparePathName;
     private SQLReader sqlread;
 
     private static String driverName = "org.apache.hive.jdbc.HiveDriver";
@@ -31,16 +31,17 @@ public class TablesGeneration {
         }
         sqlread = new SQLReader();
 
-        pathname = props.getProperty("queriesCompareFilePath");
-        queries = sqlread.readQueries(pathname);  //Read COMPARE queries
-        pathname = props.getProperty("queriesCreateFilePath");
-        //this.queries = sqlread.readQueries(pathname);  //Read CREATE / DROP queries
+        comparePathName = props.getProperty("queriesCompareFilePath");
+        queries = sqlread.readQueries(comparePathName);  //Read COMPARE queries
+        initPathName = props.getProperty("queriesCreateFilePath");
+        //this.queries = sqlread.readQueries(initPathName);  //Read CREATE / DROP queries
     }
 
     private void createTables(Connection con) {
 
         try {
-            Process process = Runtime.getRuntime().exec("hive -f " + this.pathname);
+            Process process = Runtime.getRuntime().exec("hive -f " + this.initPathName);
+            process.waitFor();
             process.waitFor();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

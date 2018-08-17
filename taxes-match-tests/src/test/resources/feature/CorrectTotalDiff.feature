@@ -7,6 +7,6 @@ Feature: CorrectTotalDiff
 
     Examples:
       | table1                          | seller                              | customer                        |
-      | seller_correct_total_diff       | seller_correct_total_diff.csv       | customer_correct_total_diff.csv |
+      | correct_total_diff              | seller_correct_total_diff.csv       | customer_correct_total_diff.csv |
 
 

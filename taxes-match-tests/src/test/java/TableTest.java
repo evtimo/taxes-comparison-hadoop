@@ -27,7 +27,7 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
     String jarName = "taxes-generation-1.0-SNAPSHOT-jar-with-dependencies.jar";
 
     TableTest() {
-        con = HiveConnection.getInstance().getCon();
+        con = HiveConnectionImpl.getInstance().getCon();
     }
 
     private void runJar(String jarPath, String jarName, String... args) {
@@ -41,6 +41,7 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
             e.printStackTrace();
         }
     }
+
 
     protected void given(String sellerTable, String customerTable) throws IOException {
 
@@ -58,7 +59,6 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
         System.out.println(seller);
         System.out.println(customer);
-
     }
 
 
@@ -86,11 +86,7 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     }
 
-
-    static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
-
-        String s = "test";
-        String s2 = s.concat("2");
+    public static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
         Statement stmt = null;
         try {
             stmt = con.createStatement();
@@ -106,11 +102,6 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         }
 
         ResultSet rs = stmt.getResultSet();
-        rs.last();
-        for (int i = 0; i < (rs.getRow()); i++) {
-            System.out.println(rs.getString(i));
-        }
-
         return rs;
     }
 

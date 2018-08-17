@@ -43,7 +43,7 @@ class TableRecord {
 
     @Override
     public String toString() {
-        String res;
+
         switch (recordType) {
             case SELLER:
                 return getSeller_inn() + "," + getSeller_kpp() + "," + getCustomer_inn() + "," + getCustomer_kpp() + "," + getTotal() + ',' + getTotal();
