@@ -3,9 +3,13 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.csv.CSVRecord;
 
+import java.lang.*;
+import java.io.*;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -43,10 +47,11 @@ class TableRecord {
 
     @Override
     public String toString() {
-
+        String res;
         switch (recordType) {
             case SELLER:
                 return getSeller_inn() + "," + getSeller_kpp() + "," + getCustomer_inn() + "," + getCustomer_kpp() + "," + getTotal() + ',' + getTotal();
+				
             case CUSTOMER:
                 return getCustomer_inn() + "," + getCustomer_kpp() + "," + getSeller_inn() + "," + getSeller_kpp() + "," + getTotal() + ',' + getTotal();
             default:
@@ -55,33 +60,35 @@ class TableRecord {
     }
 
     public void insertIntoTable(Connection con) {
-
-        PreparedStatement preparedStmt = null;
+        
         try {
-
-            switch (recordType) {
+	    Statement stmt = con.createStatement();
+	    switch (recordType) {
                 case SELLER:
-                    preparedStmt = con.prepareStatement("insert into table default.seller VALUES(?,?,?,?,?,?)");
-                    preparedStmt.setString(1, getSeller_inn());
-                    preparedStmt.setString(2, getSeller_kpp());
-                    preparedStmt.setString(3, getCustomer_inn());
-                    preparedStmt.setString(4, getCustomer_kpp());
+                    System.out.println("insert into table default." + recordType
+                            + " VALUES("+getSeller_inn()+"," + getSeller_kpp() + ","+getCustomer_inn() + ","+getCustomer_kpp()
+                            + ","+getTotal() + "," + getTotal() + ")");
+
+
+		    stmt.execute("insert into table default." + recordType
+                            + " VALUES("+getSeller_inn()+"," + getSeller_kpp() + ","+getCustomer_inn() + ","+getCustomer_kpp()
+                            + ","+getTotal() + "," + getTotal() + ")");
+  
                     break;
                 case CUSTOMER:
-                    preparedStmt = con.prepareStatement("insert into table default.customer VALUES(?,?,?,?,?,?)");
-                    preparedStmt.setString(1, getCustomer_inn());
-                    preparedStmt.setString(2, getCustomer_kpp());
-                    preparedStmt.setString(3, getSeller_inn());
-                    preparedStmt.setString(4, getSeller_kpp());
-                    break;
-            }
+                   System.out.println("insert into table default." + recordType
+                            + " VALUES("+getSeller_inn()+"," + getSeller_kpp() + ","+getCustomer_inn() + ","+getCustomer_kpp()
+                            + ","+getTotal() + "," + getTotal() + ")");
+		   
+                   stmt.execute("insert into table default." + recordType
+                            + " VALUES("+getCustomer_inn()+"," + getCustomer_kpp() + ","+getSeller_inn() + ","+getSeller_kpp()
+                            + "," + getTotal() + ","+getTotal() + ")");
+//		    stmt.execute("insert into table default.CUSTOMER VALUES(1,2,3,4,5,6)");
 
-            preparedStmt.setDouble(5, getTotal());
-            preparedStmt.setDouble(6, getTotal());
-            preparedStmt.executeUpdate();
+		    break;
+            }  
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+	}
     }
 }
-

@@ -7,6 +7,6 @@ Feature: CorrectCompletely
 
     Examples:
       | table1                    | seller                        | customer                      |
-      | seller_correct_completely | seller_correct_completely.csv | seller_correct_completely.csv |
+      | correct_completely        | seller_correct_completely.csv | seller_correct_completely.csv |
 
 

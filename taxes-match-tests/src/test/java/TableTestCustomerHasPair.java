@@ -5,6 +5,7 @@ import cucumber.api.java.en.When;
 import org.testng.Assert;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @CucumberOptions(features = "src/test/resources/feature/CustomerHasPair.feature")
@@ -25,7 +26,7 @@ public class TableTestCustomerHasPair extends TableTest {
 
         // Testing with local data
 
-        Assert.assertEquals(sellerRecord.get("seller_inn_err"),
+        /* Assert.assertEquals(sellerRecord.get("seller_inn_err"),
                 sellerRecord.get("seller_inn_err"));
         Assert.assertEquals(sellerRecord.get("seller_kpp_err"),
                 sellerRecord.get("seller_kpp_err"));
@@ -49,39 +50,37 @@ public class TableTestCustomerHasPair extends TableTest {
         Assert.assertEquals(customerRecord.get("total_without_tax_err"),
                 customerRecord.get("total_without_tax_err"));
         Assert.assertEquals(customerRecord.get("total_with_tax_err"),
-                customerRecord.get("total_with_tax_err"));
+                customerRecord.get("total_with_tax_err")); */
 
         // Testing with data from Hive
 
-/*
         ResultSet sellerFromTable = getResultSetFromTable(con,tableName1);
         ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
+	
+        Assert.assertEquals(sellerRecord.get("seller_inn_err"),
+                sellerFromTable.getString("seller_inn_err"));
+        Assert.assertEquals(sellerRecord.get("seller_kpp_err"),
+                sellerFromTable.getString("seller_kpp_err"));
+        Assert.assertEquals(sellerRecord.get("customer_inn_err"),
+                sellerFromTable.getString("customer_inn_err"));
+        Assert.assertEquals(sellerRecord.get("customer_kpp_err"),
+                sellerFromTable.getString("customer_kpp_err"));
+        Assert.assertEquals(sellerRecord.get("total_without_tax_err"),
+                sellerFromTable.getString("total_without_tax_err"));
+        Assert.assertEquals(sellerRecord.get("total_with_tax_err"),
+                sellerFromTable.getString("total_with_tax_err"));
 
-        Assert.assertEquals(sellerRecord.get("seller_inn_corr"),
-                sellerFromTable.getString("seller_inn_corr"));
-        Assert.assertEquals(sellerRecord.get("seller_kpp_corr"),
-                sellerFromTable.getString("seller_kpp_corr"));
-        Assert.assertEquals(sellerRecord.get("customer_inn_corr"),
-                sellerFromTable.getString("customer_inn_corr"));
-        Assert.assertEquals(sellerRecord.get("customer_kpp_corr"),
-                sellerFromTable.getString("customer_kpp_corr"));
-        Assert.assertEquals(sellerRecord.get("total_without_tax_corr"),
-                sellerFromTable.getString("total_without_tax_corr"));
-        Assert.assertEquals(sellerRecord.get("total_with_tax_corr"),
-                sellerFromTable.getString("total_with_tax_corr"));
-
-         Assert.assertEquals(customerRecord.get("seller_inn_corr"),
-                customerFromTable.getString("seller_inn_corr"));
-        Assert.assertEquals(customerRecord.get("seller_kpp_corr"),
-                customerFromTable.getString("seller_kpp_corr"));
-        Assert.assertEquals(customerRecord.get("customer_inn_corr"),
-                customerFromTable.getString("customer_inn_corr"));
-        Assert.assertEquals(customerRecord.get("customer_kpp_corr"),
-                customerFromTable.getString("customer_kpp_corr"));
-        Assert.assertEquals(customerRecord.get("total_without_tax_corr"),
-                customerFromTable.getString("total_without_tax_corr"));
-        Assert.assertEquals(customerRecord.get("total_with_tax_corr"),
-                customerFromTable.getString("total_with_tax_corr"));
-    */
+         Assert.assertEquals(customerRecord.get("seller_inn_err"),
+                customerFromTable.getString("seller_inn_err"));
+        Assert.assertEquals(customerRecord.get("seller_kpp_err"),
+                customerFromTable.getString("seller_kpp_err"));
+        Assert.assertEquals(customerRecord.get("customer_inn_err"),
+                customerFromTable.getString("customer_inn_err"));
+        Assert.assertEquals(customerRecord.get("customer_kpp_err"),
+                customerFromTable.getString("customer_kpp_err"));
+        Assert.assertEquals(customerRecord.get("total_without_tax_err"),
+                customerFromTable.getString("total_without_tax_err"));
+        Assert.assertEquals(customerRecord.get("total_with_tax_err"),
+                customerFromTable.getString("total_with_tax_err"));
     }
 }

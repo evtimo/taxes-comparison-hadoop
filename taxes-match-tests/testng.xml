@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="SuiteName">
+<suite name="SuiteName" parallel="none">
     <test name="TableTestCorrectCompletely">
         <classes>
             <class name="TableTestCorrectCompletely">

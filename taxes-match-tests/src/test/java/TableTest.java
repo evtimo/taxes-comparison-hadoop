@@ -20,10 +20,15 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     TableRecord seller;
     TableRecord customer;
-    protected Connection con = HiveConnection.getInstance().getCon();
-
+    protected Connection con;
     protected CSVRecord sellerRecord;
     protected CSVRecord customerRecord;
+
+    TableTest() { 
+       con = HiveConnectionImpl.getInstance().getCon();
+	System.out.println("Connection OK");
+	System.out.println(con);   
+ }
 
     protected void given(String sellerTable, String customerTable) throws IOException {
 
@@ -46,26 +51,34 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     protected void when() {
 
-        /* HiveConnection to Hive Database.
+        /* HiveConnection to Hive Database. */
+        String jarPath = "../taxes-generation/target/";
+        String jarName = "taxes-generation-1.0-SNAPSHOT-jar-with-dependencies.jar";
+//        try {
+//            Process process = Runtime.getRuntime().exec("java -jar " + jarPath + jarName);
+//            process.waitFor();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
-        con = tab.Connect();
+          seller.insertIntoTable(con);
+          customer.insertIntoTable(con);
 
-        tab.DeleteTables(con);
-        tab.CreateTables(con);
-
-        SELLER.insertIntoTable(con);
-        CUSTOMER.insertIntoTable(con);
-
-        tab.DropCompareTables(con);
-        tab.CompareTables(con);*/
     }
 
 
     public void then(String tableName1, String tableName2) throws SQLException {
-
-        ResultSet sellerFromTable = getResultSetFromTable(con, tableName1);
-        ResultSet customerFromTable = getResultSetFromTable(con, tableName2);
-
+	ResultSet sellerFromTable = null;
+	ResultSet customerFromTable = null;
+	System.out.println(con);
+        try {
+		sellerFromTable = getResultSetFromTable(con, tableName1);
+        	customerFromTable = getResultSetFromTable(con, tableName2);
+	} catch (Exception e) { 
+		e.printStackTrace(); 
+	}
         Assert.assertEquals(sellerRecord.get("total_with_tax_err"),
                 sellerFromTable.getString("total_with_tax_err"));
         Assert.assertEquals(customerRecord.get("total_with_tax_err"),
@@ -91,11 +104,6 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         }
 
         ResultSet rs = stmt.getResultSet();
-        rs.last();
-        for (int i = 0; i < (rs.getRow()); i++) {
-            System.out.println(rs.getString(i));
-        }
-
         return rs;
     }
 
