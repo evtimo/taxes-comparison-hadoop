@@ -36,14 +36,9 @@ class HiveConnection {
         try {
            Class.forName(driverName);
            con = DriverManager.getConnection(URL);
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             onProgramExit();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            onProgramExit();
-        } finally {
-            if(con != null) try {con.close();} catch (SQLException e) {/* ignore*/}
         }
     }
 

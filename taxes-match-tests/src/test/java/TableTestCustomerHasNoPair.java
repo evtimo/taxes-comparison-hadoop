@@ -5,6 +5,7 @@ import cucumber.api.java.en.When;
 import org.testng.Assert;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @CucumberOptions(features = "src/test/resources/feature/CustomerHasNoPair.feature")
@@ -25,7 +26,7 @@ public class TableTestCustomerHasNoPair extends TableTest {
 
         // Testing with local data
 
-        Assert.assertEquals(customerRecord.get("seller_inn_err"),
+       /* Assert.assertEquals(customerRecord.get("seller_inn_err"),
                 customerRecord.get("seller_inn_err"));
         Assert.assertEquals(customerRecord.get("seller_kpp_err"),
                 customerRecord.get("seller_kpp_err"));
@@ -36,12 +37,12 @@ public class TableTestCustomerHasNoPair extends TableTest {
         Assert.assertEquals(customerRecord.get("total_without_tax_err"),
                 customerRecord.get("total_without_tax_err"));
         Assert.assertEquals(customerRecord.get("total_with_tax_err"),
-                customerRecord.get("total_with_tax_err"));
+                customerRecord.get("total_with_tax_err")); */
 
         // Testing with data from Hive
 
 
-     /*   ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
+        ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
 
         Assert.assertEquals(customerRecord.get("seller_inn_corr"),
                 customerFromTable.getString("seller_inn_corr"));
@@ -55,6 +56,6 @@ public class TableTestCustomerHasNoPair extends TableTest {
                 customerFromTable.getString("total_without_tax_corr"));
         Assert.assertEquals(customerRecord.get("total_with_tax_corr"),
                 customerFromTable.getString("total_with_tax_corr"));
-    */
+
     }
 }

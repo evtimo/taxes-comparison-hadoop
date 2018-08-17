@@ -20,10 +20,27 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     TableRecord seller;
     TableRecord customer;
-    protected Connection con = HiveConnection.getInstance().getCon();
-
+    protected Connection con;
     protected CSVRecord sellerRecord;
     protected CSVRecord customerRecord;
+    String jarPath = "../taxes-generation/target/";
+    String jarName = "taxes-generation-1.0-SNAPSHOT-jar-with-dependencies.jar";
+
+    TableTest() {
+        con = HiveConnection.getInstance().getCon();
+    }
+
+    private void runJar(String jarPath, String jarName, String... args) {
+
+        String command = "java jar" + jarPath + jarName + String.join(" ", args);
+        System.out.println(command);
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     protected void given(String sellerTable, String customerTable) throws IOException {
 
@@ -41,23 +58,19 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
         System.out.println(seller);
         System.out.println(customer);
+
     }
 
 
     protected void when() {
 
-        /* HiveConnection to Hive Database.
+        runJar(jarPath, jarName, "create");
 
-        con = tab.Connect();
+        seller.insertIntoTable(con);
+        customer.insertIntoTable(con);
 
-        tab.DeleteTables(con);
-        tab.CreateTables(con);
+        runJar(jarPath, jarName, "match");
 
-        SELLER.insertIntoTable(con);
-        CUSTOMER.insertIntoTable(con);
-
-        tab.DropCompareTables(con);
-        tab.CompareTables(con);*/
     }
 
 
@@ -73,7 +86,11 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     }
 
-    public static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
+
+    static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
+
+        String s = "test";
+        String s2 = s.concat("2");
         Statement stmt = null;
         try {
             stmt = con.createStatement();
@@ -84,9 +101,7 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         String QUERY_SHOW = "SELECT * FROM " + TableName;
         try {
             stmt.execute(QUERY_SHOW);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
         }
 

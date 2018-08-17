@@ -39,36 +39,49 @@ public class TablesGeneration {
 
     private void createTables(Connection con) {
 
-    private static void createTables(Connection con) {
-
         try {
             Process process = Runtime.getRuntime().exec("hive -f " + this.pathname);
-        } catch (IOException e) {
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private static void compareTables(Connection con) {
+    private static void matchTables(Connection con) {
+        //TODO: executing ALL queries from file, even without names
         try {
             Statement stmt = con.createStatement();
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_CORR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_CORR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_COMPLETELY"));
-            stmt.execute(queries.get("QUERY_COMPARE_CORRECT_TOTAL_DIFF"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_CUSTOMER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_SELLER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_CUSTOMER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_SELLER_HAS_PAIR"));
-            stmt.execute(queries.get("QUERY_COMPARE_SELLER_ERROR_HAS_NO_PAIR)"));
-            stmt.execute(queries.get("QUERY_COMPARE_CUSTOMER_ERROR_HAS_NO_PAIR"));
+            stmt.execute(queries.get("SELLER_ERRORS"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS"));
+            stmt.execute(queries.get("SELLER_CORRECT"));
+            stmt.execute(queries.get("CUSTOMER_CORRECT"));
+            stmt.execute(queries.get("CORRECT_COMPLETELY"));
+            stmt.execute(queries.get("CORRECT_TOTAL_DIFF"));
+            stmt.execute(queries.get("SELLER_ERRORS_CUSTOMER_HAS_PAIR"));
+            stmt.execute(queries.get("SELLER_ERRORS_SELLER_HAS_PAIR"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS_CUSTOMER_HAS_PAIR"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS_SELLER_HAS_PAIR"));
+            stmt.execute(queries.get("SELLER_ERRORS_HAS_NO_PAIR"));
+            stmt.execute(queries.get("CUSTOMER_ERRORS_HAS_NO_PAIR"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void dropAllTables(Connection con) {
+    private void dropSourceTables(Connection con) {
+        Statement stmt;
+        try {
+            stmt = con.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS SELLER");
+            stmt.execute("DROP TABLE IF EXISTS CUSTOMER");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void dropMatchingTables(Connection con) {
+
         try {
             Statement stmt = con.createStatement();
             for (Map.Entry<String, String> entry : queries.entrySet()) {
@@ -98,11 +111,43 @@ public class TablesGeneration {
 
         //Use this code to run programm for the first time
         //Create all tables and insert your data from CVS or manually
+        //TODO: method for loading csv ino SELLER and CUSTOMER tables
 
         TablesGeneration tg = new TablesGeneration();
         Connection con = tg.connect();
-        tg.dropAllTables(con);
-        tg.createTables(con);
-        tg.compareTables(con);
+        switch (args[0]) {
+            case "create":
+                tg.dropSourceTables(con);
+                tg.createTables(con);
+                break;
+            case "match":
+                tg.dropMatchingTables(con);
+                switch (args[1]) {
+                    //TODO: dictionary of exact queries
+                    //case(
+                    case "all":
+                        tg.matchTables(con);
+                        break;
+                    default:
+                        tg.matchTables(con);
+                }
+                break;
+            case "drop":
+                switch (args[1]) {
+                    case "all":
+                        tg.dropSourceTables(con);
+                        tg.dropMatchingTables(con);
+                        break;
+                    case "source":
+                        tg.dropSourceTables(con);
+                        break;
+                    case "matching":
+                        tg.dropMatchingTables(con);
+                        break;
+                }
+                break;
+            default:
+                System.out.println("Enter parameters!");
+        }
     }
 }

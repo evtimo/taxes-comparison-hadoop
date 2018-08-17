@@ -5,9 +5,10 @@ import cucumber.api.java.en.When;
 import org.testng.Assert;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@CucumberOptions(features ="src/test/resources/feature/CorrectTotalDiff.feature")
+@CucumberOptions(features = "src/test/resources/feature/CorrectTotalDiff.feature")
 public class TableTestCorrectTotalDiff extends TableTest {
 
     @Given("^Table (.*) and (.*) with different 'total' fields$")
@@ -21,11 +22,11 @@ public class TableTestCorrectTotalDiff extends TableTest {
     }
 
     @Then("^(.*) should contain correct record with different 'total'$")
-    public void then (String tableName1) throws SQLException {
+    public void then(String tableName1) throws SQLException {
 
         // Testing with local data
 
-        Assert.assertEquals(sellerRecord.get("seller_inn_corr"),
+        /*Assert.assertEquals(sellerRecord.get("seller_inn_corr"),
                 sellerRecord.get("seller_inn_corr"));
         Assert.assertEquals(sellerRecord.get("seller_kpp_corr"),
                 sellerRecord.get("seller_kpp_corr"));
@@ -36,11 +37,11 @@ public class TableTestCorrectTotalDiff extends TableTest {
         Assert.assertEquals(sellerRecord.get("total_without_tax_corr"),
                 sellerRecord.get("total_without_tax_corr"));
         Assert.assertEquals(sellerRecord.get("total_with_tax_corr"),
-                sellerRecord.get("total_with_tax_corr"));
+                sellerRecord.get("total_with_tax_corr")); */
 
         // Testing with data from Hive
 
-    /*    ResultSet sellerFromTable = getResultSetFromTable(con,tableName1);
+        ResultSet sellerFromTable = getResultSetFromTable(con, tableName1);
 
         Assert.assertEquals(sellerRecord.get("seller_inn_corr"),
                 sellerFromTable.getString("seller_inn_corr"));
@@ -54,5 +55,5 @@ public class TableTestCorrectTotalDiff extends TableTest {
                 sellerFromTable.getString("total_without_tax_corr"));
         Assert.assertEquals(sellerRecord.get("total_with_tax_corr"),
                 sellerFromTable.getString("total_with_tax_corr"));
-   */ }
+    }
 }
