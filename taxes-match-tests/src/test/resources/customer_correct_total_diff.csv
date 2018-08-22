@@ -1,2 +1,2 @@
-customer_inn_corr,customer_kpp_corr,seller_inn_corr,seller_kpp_corr,total_without_tax_corr,total_with_tax_corr
-2547472459,254703836,2598114889,259803308,1000000.86,1000000.86
+seller_inn_corr,seller_kpp_corr,customer_inn_corr,customer_kpp_corr,total_without_tax_corr,total_with_tax_corr
+2598114889,259803308,2547472459,254703836,1000000.86,1000000.86

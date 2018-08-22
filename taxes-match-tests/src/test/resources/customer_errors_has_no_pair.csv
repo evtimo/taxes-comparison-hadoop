@@ -1,2 +1,2 @@
-customer_inn_err,customer_kpp_err,seller_inn_err,seller_kpp_err,total_without_tax_err,total_with_tax_err
-5000000000,500000000,5000000000,500000000,269220.54,269220.54
+seller_inn_err,seller_kpp_err,customer_inn_err,customer_kpp_err,total_without_tax_err,total_with_tax_err
+5242424242,568686868,5464646464,579797979,269220.54,269220.54

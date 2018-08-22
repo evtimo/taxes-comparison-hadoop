@@ -32,10 +32,10 @@ class TableRecord {
                 this.setTotal(Double.parseDouble(rec.get(4)));
                 break;
             case CUSTOMER:
-                this.setCustomer_inn(rec.get(0));
-                this.setCustomer_kpp(rec.get(1));
-                this.setSeller_inn(rec.get(2));
-                this.setSeller_kpp(rec.get(3));
+                this.setCustomer_inn(rec.get(2));
+                this.setCustomer_kpp(rec.get(3));
+                this.setSeller_inn(rec.get(0));
+                this.setSeller_kpp(rec.get(1));
                 this.setTotal(Double.parseDouble(rec.get(4)));
                 break;
         }

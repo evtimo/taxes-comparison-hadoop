@@ -24,21 +24,6 @@ public class TableTestCustomerHasPair extends TableTest {
     @Then("^(.*) and (.*) should have different seller fields$")
     public void then(String tableName1, String tableName2) throws SQLException {
 
-        // Testing with local data
-
-        /* Assert.assertEquals(sellerRecord.get("seller_inn_err"),
-                sellerRecord.get("seller_inn_err"));
-        Assert.assertEquals(sellerRecord.get("seller_kpp_err"),
-                sellerRecord.get("seller_kpp_err"));
-        Assert.assertEquals(sellerRecord.get("customer_inn_err"),
-                sellerRecord.get("customer_inn_err"));
-        Assert.assertEquals(sellerRecord.get("customer_kpp_err"),
-                sellerRecord.get("customer_kpp_err"));
-        Assert.assertEquals(sellerRecord.get("total_without_tax_err"),
-                sellerRecord.get("total_without_tax_err"));
-        Assert.assertEquals(sellerRecord.get("total_with_tax_err"),
-                sellerRecord.get("total_with_tax_err"));
-
         Assert.assertEquals(customerRecord.get("seller_inn_err"),
                 customerRecord.get("seller_inn_err"));
         Assert.assertEquals(customerRecord.get("seller_kpp_err"),
@@ -55,7 +40,7 @@ public class TableTestCustomerHasPair extends TableTest {
         // Testing with data from Hive
 
         ResultSet sellerFromTable = getResultSetFromTable(con,tableName1);
-        ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
+        ResultSet customerFromTable = getResultSetFromTable(con,tableName2);
 
         Assert.assertEquals(sellerRecord.get("seller_inn_err"),
                 sellerFromTable.getString("seller_inn_err"));

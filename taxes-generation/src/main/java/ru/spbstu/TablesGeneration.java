@@ -34,14 +34,12 @@ public class TablesGeneration {
         comparePathName = props.getProperty("queriesCompareFilePath");
         queries = sqlread.readQueries(comparePathName);  //Read COMPARE queries
         initPathName = props.getProperty("queriesCreateFilePath");
-        //this.queries = sqlread.readQueries(initPathName);  //Read CREATE / DROP queries
     }
 
     private void createTables(Connection con) {
 
         try {
             Process process = Runtime.getRuntime().exec("hive -f " + this.initPathName);
-            process.waitFor();
             process.waitFor();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -50,8 +48,8 @@ public class TablesGeneration {
 
     private static void matchTables(Connection con) {
         //TODO: executing ALL queries from file, even without names
-        try {
-            Statement stmt = con.createStatement();
+            try {
+	    Statement stmt = con.createStatement();	
             stmt.execute(queries.get("SELLER_ERRORS"));
             stmt.execute(queries.get("CUSTOMER_ERRORS"));
             stmt.execute(queries.get("SELLER_CORRECT"));
@@ -63,8 +61,8 @@ public class TablesGeneration {
             stmt.execute(queries.get("CUSTOMER_ERRORS_CUSTOMER_HAS_PAIR"));
             stmt.execute(queries.get("CUSTOMER_ERRORS_SELLER_HAS_PAIR"));
             stmt.execute(queries.get("SELLER_ERRORS_HAS_NO_PAIR"));
-            stmt.execute(queries.get("CUSTOMER_ERRORS_HAS_NO_PAIR"));
-        } catch (SQLException e) {
+	    stmt.execute(queries.get("CUSTOMER_ERRORS_HAS_NO_PAIR"));
+	    } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -116,14 +114,16 @@ public class TablesGeneration {
 
         TablesGeneration tg = new TablesGeneration();
         Connection con = tg.connect();
-        switch (args[0]) {
+
+	if (args.length == 0) {System.out.println("Enter arguments!");} else {
+	switch (args[0]) {
             case "create":
-                tg.dropSourceTables(con);
+		tg.dropSourceTables(con);
                 tg.createTables(con);
                 break;
             case "match":
                 tg.dropMatchingTables(con);
-                switch (args[1]) {
+                switch (args.length > 1 ? args[1] : "all") {
                     //TODO: dictionary of exact queries
                     //case(
                     case "all":
@@ -131,10 +131,11 @@ public class TablesGeneration {
                         break;
                     default:
                         tg.matchTables(con);
+			break;
                 }
                 break;
             case "drop":
-                switch (args[1]) {
+                switch (args.length > 1 ? args[1] : "all") {
                     case "all":
                         tg.dropSourceTables(con);
                         tg.dropMatchingTables(con);
@@ -148,7 +149,9 @@ public class TablesGeneration {
                 }
                 break;
             default:
-                System.out.println("Enter parameters!");
+                System.out.println("Incorrect arguments!");
         }
+	}
     }
+
 }

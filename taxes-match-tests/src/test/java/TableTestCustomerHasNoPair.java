@@ -24,24 +24,6 @@ public class TableTestCustomerHasNoPair extends TableTest {
     @Then("^(.*) should contain original customer record$")
     public void then(String tableName1) throws SQLException {
 
-        // Testing with local data
-
-       /* Assert.assertEquals(customerRecord.get("seller_inn_err"),
-                customerRecord.get("seller_inn_err"));
-        Assert.assertEquals(customerRecord.get("seller_kpp_err"),
-                customerRecord.get("seller_kpp_err"));
-        Assert.assertEquals(customerRecord.get("customer_inn_err"),
-                customerRecord.get("customer_inn_err"));
-        Assert.assertEquals(customerRecord.get("customer_kpp_err"),
-                customerRecord.get("customer_kpp_err"));
-        Assert.assertEquals(customerRecord.get("total_without_tax_err"),
-                customerRecord.get("total_without_tax_err"));
-        Assert.assertEquals(customerRecord.get("total_with_tax_err"),
-                customerRecord.get("total_with_tax_err")); */
-
-        // Testing with data from Hive
-
-
         ResultSet customerFromTable = getResultSetFromTable(con,tableName1);
 
         Assert.assertEquals(customerRecord.get("seller_inn_err"),

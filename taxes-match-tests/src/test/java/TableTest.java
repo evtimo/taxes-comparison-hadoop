@@ -32,8 +32,7 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     private void runJar(String jarPath, String jarName, String... args) {
 
-        String command = "java jar" + jarPath + jarName + String.join(" ", args);
-        System.out.println(command);
+        String command = "java -jar " + jarPath + jarName + " " + String.join(" ", args);
         try {
             Process process = Runtime.getRuntime().exec(command);
             process.waitFor();
@@ -56,35 +55,18 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().parse(csv_file);
         customerRecord = parser.getRecords().get(0);
         this.customer = new TableRecord(customerRecord, RecordType.CUSTOMER);
-
-        System.out.println(seller);
-        System.out.println(customer);
     }
 
 
     protected void when() {
 
-        runJar(jarPath, jarName, "create");
+//        runJar(jarPath, jarName, "create");
 
-        seller.insertIntoTable(con);
-        customer.insertIntoTable(con);
+//        seller.insertIntoTable(con);
+//        customer.insertIntoTable(con);
 
-        runJar(jarPath, jarName, "match");
-
-    }
-
-
-    public void then(String tableName1, String tableName2) throws SQLException {
-
-        ResultSet sellerFromTable = getResultSetFromTable(con, tableName1);
-        ResultSet customerFromTable = getResultSetFromTable(con, tableName2);
-
-        Assert.assertEquals(sellerRecord.get("total_with_tax_err"),
-                sellerFromTable.getString("total_with_tax_err"));
-        Assert.assertEquals(customerRecord.get("total_with_tax_err"),
-                customerFromTable.getString("total_with_tax_err"));
-
-    }
+//        runJar(jarPath, jarName, "compare");
+   }
 
     public static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
         Statement stmt = null;
@@ -102,7 +84,10 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         }
 
         ResultSet rs = stmt.getResultSet();
-        return rs;
+	while (rs.next()) {
+ 	   rs.getString(1);
+	}
+	return rs;
     }
 
 }

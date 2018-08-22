@@ -25,24 +25,6 @@ public class TableTestCorrectCompletely extends TableTest {
     @Then("^(.*) should contain correct record$")
     public void then(String tableName1) throws SQLException {
 
-        // Testing with local data
-
-        /*Assert.assertEquals(sellerRecord.get("seller_inn_corr"),
-                sellerRecord.get("seller_inn_corr"));
-        Assert.assertEquals(sellerRecord.get("seller_kpp_corr"),
-                sellerRecord.get("seller_kpp_corr"));
-        Assert.assertEquals(sellerRecord.get("customer_inn_corr"),
-                sellerRecord.get("customer_inn_corr"));
-        Assert.assertEquals(sellerRecord.get("customer_kpp_corr"),
-                sellerRecord.get("customer_kpp_corr"));
-        Assert.assertEquals(sellerRecord.get("total_without_tax_corr"),
-                sellerRecord.get("total_without_tax_corr"));
-        Assert.assertEquals(sellerRecord.get("total_with_tax_corr"),
-                sellerRecord.get("total_with_tax_corr")); */
-
-        // Testing with data from Hive
-
-
         ResultSet sellerFromTable = getResultSetFromTable(con,tableName1);
 
         Assert.assertEquals(sellerRecord.get("seller_inn_corr"),
