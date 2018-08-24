@@ -1,6 +1,7 @@
 package ru.spbstu;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +24,7 @@ public class TablesGeneration {
 
     private String URL = "jdbc:hive2://localhost:10000";
 
-    private static final Logger log = Logger.getLogger(TablesGeneration.class);
+    private static final Logger log = LogManager.getLogger(TablesGeneration.class);
 
     private TablesGeneration() {
         String resourceName = "config.properties";

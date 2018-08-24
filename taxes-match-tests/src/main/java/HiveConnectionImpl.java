@@ -3,7 +3,7 @@ import lombok.SneakyThrows;
 import lombok.Synchronized;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static lombok.AccessLevel.PRIVATE;
 
-@Log4j
+@Log4j2
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 class HiveConnectionImpl {
 

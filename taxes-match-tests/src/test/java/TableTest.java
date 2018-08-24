@@ -2,6 +2,7 @@ import cucumber.api.testng.AbstractTestNGCucumberTests;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import lombok.var;
 import org.apache.commons.csv.CSVFormat;
@@ -13,8 +14,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import static lombok.AccessLevel.PRIVATE;
-import static org.apache.hadoop.hbase.TestChoreService.log;
 
+@Log4j2
 @FieldDefaults(level = PRIVATE)
 abstract class TableTest extends AbstractTestNGCucumberTests {
 
