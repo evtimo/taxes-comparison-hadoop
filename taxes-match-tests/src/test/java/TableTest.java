@@ -1,19 +1,19 @@
 import cucumber.api.testng.AbstractTestNGCucumberTests;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
+import lombok.val;
 import lombok.var;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.testng.Assert;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import static lombok.AccessLevel.PRIVATE;
+import static org.apache.hadoop.hbase.TestChoreService.log;
 
 @FieldDefaults(level = PRIVATE)
 abstract class TableTest extends AbstractTestNGCucumberTests {
@@ -30,15 +30,13 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
         con = HiveConnectionImpl.getInstance().getCon();
     }
 
+    @SneakyThrows
     private void runJar(String jarPath, String jarName, String... args) {
-
         String command = "java -jar " + jarPath + jarName + " " + String.join(" ", args);
-        try {
-            Process process = Runtime.getRuntime().exec(command);
-            process.waitFor();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        log.info("Running: " + command);
+        Process process = Runtime.getRuntime().exec(command);
+        process.waitFor();
+        log.info("Jar executed successfully");
     }
 
 
@@ -60,34 +58,29 @@ abstract class TableTest extends AbstractTestNGCucumberTests {
 
     protected void when() {
 
-//        runJar(jarPath, jarName, "create");
+        runJar(jarPath, jarName, "create");
 
-//        seller.insertIntoTable(con);
-//        customer.insertIntoTable(con);
+        log.info("Inserting data into tables SELLER and CUSTOMER");
+        seller.insertIntoTable(con);
+        customer.insertIntoTable(con);
+        log.info("Successfully inserted!");
 
-//        runJar(jarPath, jarName, "compare");
-   }
+        runJar(jarPath, jarName, "compare");
+    }
 
-    public static ResultSet getResultSetFromTable(Connection con, String TableName) throws SQLException {
-        Statement stmt = null;
-        try {
-            stmt = con.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    @SneakyThrows
+    public static ResultSet getResultSetFromTable(Connection con, String TableName) {
+
+        val stmt = con.createStatement();
 
         String QUERY_SHOW = "SELECT * FROM " + TableName;
-        try {
-            stmt.execute(QUERY_SHOW);
-        } catch (SQLException | NullPointerException e) {
-            e.printStackTrace();
-        }
+        stmt.execute(QUERY_SHOW);
 
         ResultSet rs = stmt.getResultSet();
-	while (rs.next()) {
- 	   rs.getString(1);
-	}
-	return rs;
+        while (rs.next()) {
+            rs.getString(1);
+        }
+        return rs;
     }
 
 }

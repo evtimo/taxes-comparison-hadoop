@@ -1,11 +1,11 @@
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.csv.CSVRecord;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -54,34 +54,30 @@ class TableRecord {
         }
     }
 
+    @SneakyThrows
     void insertIntoTable(Connection con) {
 
         PreparedStatement preparedStmt = null;
-        try {
-
-            switch (recordType) {
-                case SELLER:
-                    preparedStmt = con.prepareStatement("insert into table default.seller VALUES(?,?,?,?,?,?)");
-                    preparedStmt.setString(1, getSeller_inn());
-                    preparedStmt.setString(2, getSeller_kpp());
-                    preparedStmt.setString(3, getCustomer_inn());
-                    preparedStmt.setString(4, getCustomer_kpp());
-                    break;
-                case CUSTOMER:
-                    preparedStmt = con.prepareStatement("insert into table default.customer VALUES(?,?,?,?,?,?)");
-                    preparedStmt.setString(1, getCustomer_inn());
-                    preparedStmt.setString(2, getCustomer_kpp());
-                    preparedStmt.setString(3, getSeller_inn());
-                    preparedStmt.setString(4, getSeller_kpp());
-                    break;
-            }
-
-            preparedStmt.setDouble(5, getTotal());
-            preparedStmt.setDouble(6, getTotal());
-            preparedStmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        switch (recordType) {
+            case SELLER:
+                preparedStmt = con.prepareStatement("insert into table default.seller VALUES(?,?,?,?,?,?)");
+                preparedStmt.setString(1, getSeller_inn());
+                preparedStmt.setString(2, getSeller_kpp());
+                preparedStmt.setString(3, getCustomer_inn());
+                preparedStmt.setString(4, getCustomer_kpp());
+                break;
+            case CUSTOMER:
+                preparedStmt = con.prepareStatement("insert into table default.customer VALUES(?,?,?,?,?,?)");
+                preparedStmt.setString(1, getCustomer_inn());
+                preparedStmt.setString(2, getCustomer_kpp());
+                preparedStmt.setString(3, getSeller_inn());
+                preparedStmt.setString(4, getSeller_kpp());
+                break;
         }
+
+        preparedStmt.setDouble(5, getTotal());
+        preparedStmt.setDouble(6, getTotal());
+        preparedStmt.executeUpdate();
     }
 }
 
