@@ -8,13 +8,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 public class TablesGeneration {
 
-    private static Map<String, String> queries;
+    private static LinkedHashMap<String, String> queries;
     private String initPathName, comparePathName;
     private SQLReader sqlread;
 

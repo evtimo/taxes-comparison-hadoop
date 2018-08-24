@@ -23,23 +23,6 @@ public class TableTestSellerHasPair extends TableTest {
 
     @Then("^(.*) and (.*) should have different customer fields$")
     public void then (String tableName1, String tableName2) throws SQLException {
-        
-	Assert.assertEquals(customerRecord.get("seller_inn_err"),
-                customerRecord.get("seller_inn_err"));
-        Assert.assertEquals(customerRecord.get("seller_kpp_err"),
-                customerRecord.get("seller_kpp_err"));
-        Assert.assertEquals(customerRecord.get("customer_inn_err"),
-                customerRecord.get("customer_inn_err"));
-        Assert.assertEquals(customerRecord.get("customer_kpp_err"),
-                customerRecord.get("customer_kpp_err"));
-        Assert.assertEquals(customerRecord.get("total_without_tax_err"),
-                customerRecord.get("total_without_tax_err"));
-        Assert.assertEquals(customerRecord.get("total_with_tax_err"),
-                customerRecord.get("total_with_tax_err"));
-*/
-
-        // Testing with data from Hive
-
 
         ResultSet sellerFromTable = getResultSetFromTable(con,tableName1);
         ResultSet customerFromTable = getResultSetFromTable(con,tableName2);

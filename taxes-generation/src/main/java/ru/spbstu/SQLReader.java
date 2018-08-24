@@ -3,8 +3,7 @@ package ru.spbstu;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 class NoNameQueryException extends Exception {
 
@@ -16,10 +15,10 @@ class NoNameQueryException extends Exception {
 
 public class SQLReader {
 
-    private static HashMap<String, String> mapOfQueries = null;
+    private static LinkedHashMap<String, String> mapOfQueries = null;
 
     public SQLReader() {
-        mapOfQueries = new HashMap<String, String>();
+        mapOfQueries = new LinkedHashMap<>();
     }
 
     /**
@@ -51,7 +50,7 @@ public class SQLReader {
      * @param path Path to the SQL file
      * @return list of query strings
      */
-    public Map<String, String> readQueries(String path) {
+    public LinkedHashMap<String, String> readQueries(String path) {
         String queryLine;
         StringBuffer sBuffer = new StringBuffer();
 
